@@ -11,6 +11,8 @@ import lombok.Data;
 
 @Data
 public class UserDTO {
+	private static final long serialVersionUID = 1L;
+	 
 	int userNo, authAdmin;
 	String userId, userPw, userEmail, snsToken, snsProvider;
 	Date userRegDate;

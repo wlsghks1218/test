@@ -17,13 +17,12 @@ public class CustomUserDetailService implements UserDetailsService{
 	private MemberMapper mapper;
 	
 	@Override
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-	    log.warn("username : " + username);
-	    UserDTO vo = null;
-//	    mapper.read(username);
+	public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
+	    log.warn("userId : " + userId);
+	    UserDTO vo = mapper.read(userId);
 	    if (vo == null) {
-	        log.warn(username+"유저 없음");
-	        throw new UsernameNotFoundException(username + "유저 없음");
+	        log.warn(userId+"유저 없음");
+	        throw new UsernameNotFoundException(userId + "유저 없음");
 	    }
 	    log.warn("user : " + vo);
 	    return new CustomUser(vo);

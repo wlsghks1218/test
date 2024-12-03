@@ -7,15 +7,16 @@
 		select * from users where username = #{userId} and password = #{userPw}
 	</select> -->
 	<select id="isUsernameDuplicate" resultType="int">
-		select count(*) from users where userId = #{userId}	
+		select count(*) from user_tbl where userId = #{userId}	
 	</select>
-<!-- 	<insert id="registerUser" parameterType="org.kacang.domain.UserDTO">
-		insert into users values(#{username}, #{password}, #{email}, SYSDATE, SYSDATE, 'ROLE_USER')
+	<insert id="registerUser" parameterType="org.codesync.domain.UserDTO">
+		insert into user_tbl (userId, userPw, userEmail, userRegDate, snsToken, snsProvider, authAdmin)
+					   values(#{userId}, #{userPw}, #{userEmail}, CURRENT_DATE, '-', '-', '1')
 	</insert>
-	<select id="read" resultType="org.kacang.domain.UserDTO">
-		select * from users where username = #{username}
+ 	<select id="read" resultType="org.codesync.domain.UserDTO">
+		select * from user_tbl where userId = #{userId}
 	</select>
-	<delete id="deleteRememberMe">
+<!-- 	<delete id="deleteRememberMe">
 		delete from persistent_logins where username = #{username}
 	</delete>
 	<insert id="insertRememberMe" parameterType="map">
