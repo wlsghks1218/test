@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.codesync.mapper.MemberMapper">
+<!-- 	<select id="authenticate" resultType="org.kacang.domain.UserDTO">
+		select * from users where username = #{userId} and password = #{userPw}
+	</select> -->
+	<select id="isUsernameDuplicate" resultType="int">
+		select count(*) from users where userId = #{userId}	
+	</select>
+<!-- 	<insert id="registerUser" parameterType="org.kacang.domain.UserDTO">
+		insert into users values(#{username}, #{password}, #{email}, SYSDATE, SYSDATE, 'ROLE_USER')
+	</insert>
+	<select id="read" resultType="org.kacang.domain.UserDTO">
+		select * from users where username = #{username}
+	</select>
+	<delete id="deleteRememberMe">
+		delete from persistent_logins where username = #{username}
+	</delete>
+	<insert id="insertRememberMe" parameterType="map">
+		insert into persistent_logins values(#{username}, #{series}, #{token}, sysdate)
+	</insert> -->
+</mapper>
