@@ -11,24 +11,52 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 
 public class CustomLogoutHandler implements LogoutHandler {
-	
+
+    @Autowired
+    private MemberMapper mapper;
+
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
         if (authentication == null) {
             authentication = SecurityContextHolder.getContext().getAuthentication();
-            System.out.println("Retrieved authentication from SecurityContextHolder: " + authentication);
         }
 
         if (authentication != null) {
-            System.out.println("Logging out user: " + authentication.getName());
+            String username = authentication.getName();
+            System.out.println("Logging out user: " + username);
+
+            if (username != null) {
+                try {
+                    mapper.deleteRememberMe(username);
+                } catch (Exception e) {
+                    System.err.println("Failed to delete remember-me token for user: " + username);
+                    e.printStackTrace();
+                }
+            }
+
             SecurityContextHolder.clearContext();
         } else {
-            System.out.println("Authentication is still null during logout.");
+            System.out.println("Authentication is null during logout.");
         }
 
         HttpSession session = request.getSession(false);
         if (session != null) {
-            session.invalidate();
+            try {
+                session.invalidate();
+                System.out.println("Session invalidated.");
+            } catch (IllegalStateException e) {
+                System.err.println("Failed to invalidate session.");
+                e.printStackTrace();
+            }
+        }
+
+        if (response != null) {
+            javax.servlet.http.Cookie rememberMeCookie = new javax.servlet.http.Cookie("remember-me", null);
+            rememberMeCookie.setMaxAge(0); // 즉시 삭제
+            rememberMeCookie.setHttpOnly(true);
+            rememberMeCookie.setPath("/");
+            response.addCookie(rememberMeCookie);
+            System.out.println("Remember-me cookie cleared.");
         }
     }
 }

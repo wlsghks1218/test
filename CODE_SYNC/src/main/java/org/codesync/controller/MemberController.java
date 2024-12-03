@@ -99,41 +99,31 @@ public class MemberController {
     }
 
     @PostMapping("/login") // 경로 임의 설정
-    public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException{
-    	log.info("loginRequest : "+ loginRequest);
-    	// AuthenticationManager를 사용하여 인증 수행
-    		UsernamePasswordAuthenticationToken authenticationToken = 
-    				new UsernamePasswordAuthenticationToken(loginRequest.getUserId(), loginRequest.getUserPw());
-    		
-    		// authenticate 메서드를 통해 실제 인증이 이루어짐
-    		Authentication authentication = 
-    				authenticationManager.authenticate(authenticationToken);
-    				
-    		// 검증 완료 후 세션에 저장
-    		SecurityContextHolder.getContext().setAuthentication(authentication);	
-    		
-		    customLoginSuccessHandler.onAuthenticationSuccess(request, response, authentication);
+    public void  login(@RequestBody LoginRequest loginRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException{
+    	log.warn("loginRequest : "+ loginRequest);
+		    UsernamePasswordAuthenticationToken authToken =
+		            new UsernamePasswordAuthenticationToken(loginRequest.getUserId(), loginRequest.getUserPw());
+		    Authentication auth = authenticationManager.authenticate(authToken);
+		    SecurityContextHolder.getContext().setAuthentication(auth);
+		    
+		    request.setAttribute("remember-me", loginRequest.isRememberMe());
+		    log.warn(request.getParameter("remember-me"));
     			
     		// 인증이 성공하면 CustomUserDetailsService가 호출되어 사용자가 반환됨
-    		return new ResponseEntity<String>("Login successful" , HttpStatus.OK);
+		    customLoginSuccessHandler.onAuthenticationSuccess(request, response, auth);
     }
-//    
-//    @PostMapping("/api/logout")
-//    public ResponseEntity<String> logout(HttpServletRequest request, HttpServletResponse response) {
-//    	log.info("여기 타는건가여");
-//        // Spring Security의 LogoutHandler 호출
-//    	CustomLogoutHandler logoutHandler = new CustomLogoutHandler();
-//        logoutHandler.logout(request, response, null);
-//
-//        // 로그아웃 성공 응답 반환
-//        return ResponseEntity.ok("Logout successful");
-//    }
-//    
-//    
-//    
-    @GetMapping("/user")
-    public Authentication getUser() {
-      return SecurityContextHolder.getContext().getAuthentication();
+    
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(@RequestBody Map<String, String> requestBody, HttpServletRequest request, HttpServletResponse response) {
+        log.info("여기 타는건가여");
+        String userId = requestBody.get("userId"); // 클라이언트에서 전송된 userId 추출
+        log.info("로그아웃 요청 userId: " + userId);
+
+        // CustomLogoutHandler 생성 및 로그아웃 처리
+        CustomLogoutHandler logoutHandler = new CustomLogoutHandler();
+        logoutHandler.logout(request, response, null);
+
+        return ResponseEntity.ok("Logout successful for userId: " + userId);
     }
 //    
 //    @GetMapping("/login")

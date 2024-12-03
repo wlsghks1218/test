@@ -12,9 +12,8 @@ import lombok.Getter;
 
 @Getter
 public class CustomUser extends User {
-    private static final long serialVersionUID = 1L;
 
-    private UserDTO user;
+	private UserDTO user;
 
     public CustomUser(UserDTO user) {
         super(

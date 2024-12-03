@@ -62,8 +62,8 @@
         <!-- 로그인 설정 -->
         <security:form-login
             login-page="/member/login"
-            authentication-success-handler-ref="customLoginSuccess"/>
-
+            authentication-success-handler-ref="customLoginSuccess"
+			authentication-failure-url="/member/login?error=true"/>
         <!-- 로그아웃 설정 -->
         <security:logout logout-url="/Logout" invalidate-session="true" delete-cookies="remember-me"/>
 

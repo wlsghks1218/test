@@ -16,10 +16,10 @@
  	<select id="read" resultType="org.codesync.domain.UserDTO">
 		select * from user_tbl where userId = #{userId}
 	</select>
-<!-- 	<delete id="deleteRememberMe">
-		delete from persistent_logins where username = #{username}
+ 	<delete id="deleteRememberMe">
+		delete from persistent_logins where userId = #{userId}
 	</delete>
 	<insert id="insertRememberMe" parameterType="map">
-		insert into persistent_logins values(#{username}, #{series}, #{token}, sysdate)
-	</insert> -->
+		insert into persistent_logins values(#{userId}, #{series}, #{token}, CURRENT_DATE)
+	</insert>
 </mapper>
