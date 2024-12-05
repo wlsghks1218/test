@@ -1,5 +1,6 @@
 package org.codesync.mapper;
 
+import java.util.List;
 import java.util.Map;
 
 import org.codesync.domain.UserDTO;
@@ -10,4 +11,5 @@ public interface MemberMapper {
     public UserDTO read(String userId);
 	public int deleteRememberMe(String userId);
 	public int insertRememberMe(Map<String, Object> params);
+	public List<UserDTO> getAllUsers();
 }

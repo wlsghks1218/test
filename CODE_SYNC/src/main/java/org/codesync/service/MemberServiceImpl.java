@@ -1,6 +1,7 @@
 package org.codesync.service;
 
 import java.security.SecureRandom;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -67,5 +68,10 @@ public class MemberServiceImpl implements MemberService{
     public boolean registerUser(UserDTO userDTO) {
     	int result = mapper.registerUser(userDTO); 
     	return result>0;
+    }
+    
+    @Override
+    public List<UserDTO> getAllUsers() {
+    	return mapper.getAllUsers();
     }
 }

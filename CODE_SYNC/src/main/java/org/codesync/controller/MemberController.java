@@ -3,6 +3,7 @@ package org.codesync.controller;
 import java.io.IOException;
 import java.security.SecureRandom;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -103,7 +104,9 @@ public class MemberController {
     	log.warn("loginRequest : "+ loginRequest);
 		    UsernamePasswordAuthenticationToken authToken =
 		            new UsernamePasswordAuthenticationToken(loginRequest.getUserId(), loginRequest.getUserPw());
+		    log.warn("authToken : " + authToken);
 		    Authentication auth = authenticationManager.authenticate(authToken);
+		    log.warn("login authentication : " + auth);
 		    SecurityContextHolder.getContext().setAuthentication(auth);
 		    
 		    request.setAttribute("remember-me", loginRequest.isRememberMe());
@@ -115,15 +118,23 @@ public class MemberController {
     
     @PostMapping("/logout")
     public ResponseEntity<String> logout(@RequestBody Map<String, String> requestBody, HttpServletRequest request, HttpServletResponse response) {
-        log.info("여기 타는건가여");
+        log.warn("여기 타는건가여");
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        log.warn("logout authentication : " + authentication);
         String userId = requestBody.get("userId"); // 클라이언트에서 전송된 userId 추출
-        log.info("로그아웃 요청 userId: " + userId);
+        log.warn("로그아웃 요청 userId: " + userId);
 
         // CustomLogoutHandler 생성 및 로그아웃 처리
         CustomLogoutHandler logoutHandler = new CustomLogoutHandler();
-        logoutHandler.logout(request, response, null);
+        logoutHandler.logout(request, response, authentication);
 
         return ResponseEntity.ok("Logout successful for userId: " + userId);
+    }
+    
+    @GetMapping("/getAllUsers")
+    public List<UserDTO> getAllUsers(){
+    	log.warn("모든 유저 정보" + service.getAllUsers());
+    	return service.getAllUsers();
     }
 //    
 //    @GetMapping("/login")

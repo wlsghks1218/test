@@ -10,6 +10,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 
+import lombok.extern.log4j.Log4j;
+
+@Log4j
 public class CustomLogoutHandler implements LogoutHandler {
 
     @Autowired
@@ -17,36 +20,27 @@ public class CustomLogoutHandler implements LogoutHandler {
 
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
-        if (authentication == null) {
-            authentication = SecurityContextHolder.getContext().getAuthentication();
-        }
+    	String username = request.getParameter("userId");
+        log.warn("로그아웃 유저: " + username);
 
-        if (authentication != null) {
-            String username = authentication.getName();
-            System.out.println("Logging out user: " + username);
-
-            if (username != null) {
-                try {
-                    mapper.deleteRememberMe(username);
-                } catch (Exception e) {
-                    System.err.println("Failed to delete remember-me token for user: " + username);
-                    e.printStackTrace();
-                }
+        if (username != null && !username.equals("anonymousUser")) {
+            try {
+                mapper.deleteRememberMe(username);
+                log.warn("remember-me 정보 삭제 완료: " + username);
+            } catch (Exception e) {
+                log.error("Failed to delete remember-me token for user: " + username, e);
             }
-
-            SecurityContextHolder.clearContext();
-        } else {
-            System.out.println("Authentication is null during logout.");
         }
+
+        SecurityContextHolder.clearContext();
 
         HttpSession session = request.getSession(false);
         if (session != null) {
             try {
                 session.invalidate();
-                System.out.println("Session invalidated.");
+                log.info("Session invalidated.");
             } catch (IllegalStateException e) {
-                System.err.println("Failed to invalidate session.");
-                e.printStackTrace();
+                log.error("Failed to invalidate session.", e);
             }
         }
 
@@ -56,7 +50,7 @@ public class CustomLogoutHandler implements LogoutHandler {
             rememberMeCookie.setHttpOnly(true);
             rememberMeCookie.setPath("/");
             response.addCookie(rememberMeCookie);
-            System.out.println("Remember-me cookie cleared.");
+            log.info("Remember-me cookie cleared.");
         }
     }
 }

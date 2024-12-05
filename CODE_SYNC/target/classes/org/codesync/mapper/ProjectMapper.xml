@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.codesync.mapper.ProjectMapper">
+	<insert id="createProject" parameterType="org.codesync.domain.ProjectVO"  useGeneratedKeys="true" keyProperty="projectNo">
+		insert into project_tbl (projectName, projectDisclosure, projectDesc, muserNo, projectCreateDate)
+						 values (#{projectName}, #{projectDisclosure}, #{projectDesc}, #{muserNo}, CURRENT_DATE)
+	</insert>
+	<insert id="insertProjectMasterUser" parameterType="map">
+		insert into project_user_tbl (userNo, projectNo, codeAuth, erdAuth) values (#{userNo}, #{projectNo}, 2, 2)
+	</insert>
+	<select id="getProjectList" resultType="org.codesync.domain.ProjectUserVO">
+		select * from project_user_tbl where userNo = #{userNo}
+	</select>
+	<select id="getProjectByProjectNo" resultType="org.codesync.domain.ProjectVO">
+		select * from project_tbl where projectNo = #{projectNo}
+	</select>
+	<select id="getProjectUsers" resultType="org.codesync.domain.ProjectUserVO">
+		select * from project_user_tbl where projectNo = #{projectNo}
+	</select>
+	<select id="getProjectUserInfo" resultType="org.codesync.domain.UserDTO">
+		select * from user_tbl where userNo = #{userNo}	
+	</select>
+	<insert id="inviteUser" parameterType="map">
+		insert into project_invite_tbl (userEmail, token, projectName, projectNo, userNo)
+								values (#{userEmail}, #{token}, #{projectName}, #{projectNo}, #{userNo})
+	</insert>
+	<select id="chkInvitedDuplicated" parameterType="map" resultType="int">
+		select count(*) from project_invite_tbl where projectNo = #{projectNo} and userNo = #{userNo}
+	</select>
+	<delete id="deleteInviteInfo" parameterType="map">
+		delete from project_invite_tbl where projectNo = #{projectNo} and userNo = #{userNo}
+	</delete>
+	<select id="getInviteInfo" parameterType="String" resultType="org.codesync.domain.ProjectInviteVO">
+		select * from project_invite_tbl where token = #{token}
+	</select>
+	<insert id="insertProjectMember" parameterType="map">
+		insert into project_user_tbl (userNo, projectNo, codeAuth, erdAuth)
+							  values (#{userNo}, #{projectNo}, 1, 1)
+	</insert>
+	<delete id="deleteToken" parameterType="String">
+		delete from project_invite_tbl where token = #{token}
+	</delete>
+	<select id="chkExpired" parameterType="String" resultType="int">
+		select count(*) from project_invite_tbl where token = #{token}
+	</select>
+</mapper>

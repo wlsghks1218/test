@@ -22,4 +22,7 @@
 	<insert id="insertRememberMe" parameterType="map">
 		insert into persistent_logins values(#{userId}, #{series}, #{token}, CURRENT_DATE)
 	</insert>
+	<select id="getAllUsers" resultType="org.codesync.domain.UserDTO">
+		select * from user_tbl
+	</select>
 </mapper>
