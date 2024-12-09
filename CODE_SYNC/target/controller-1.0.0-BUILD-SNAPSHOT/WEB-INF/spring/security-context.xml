@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:security="http://www.springframework.org/schema/security"
+       xsi:schemaLocation="
+           http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd
+           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!-- Custom Bean Definitions -->
+    <bean id="customAccessDenied" class="org.codesync.security.CustomAccessDeniedHandler"/>
+    <bean id="customLoginSuccess" class="org.codesync.security.CustomLoginSuccessHandler"/>
+    <bean id="bcryptPasswordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"/>
+    <bean id="customUserDetailService" class="org.codesync.security.CustomUserDetailService"/>
+    <bean id="customLogoutHandler" class="org.codesync.security.CustomLogoutHandler"/>
+
+    <!-- CORS Configuration -->
+    <bean id="corsConfigurationSource" class="org.springframework.web.cors.UrlBasedCorsConfigurationSource">
+        <property name="corsConfigurations">
+            <map>
+                <entry key="/**">
+                    <bean class="org.springframework.web.cors.CorsConfiguration">
+                        <property name="allowedOrigins">
+                            <list>
+                                <value>*</value>
+                            </list>
+                        </property>
+                        <property name="allowedMethods">
+                            <list>
+                                <value>GET</value>
+                                <value>POST</value>
+                                <value>PUT</value>
+                                <value>DELETE</value>
+                                <value>OPTIONS</value>
+                            </list>
+                        </property>
+                        <property name="allowedHeaders">
+                            <list>
+                                <value>*</value>
+                            </list>
+                        </property>
+                        <property name="allowCredentials" value="true"/>
+                    </bean>
+                </entry>
+            </map>
+        </property>
+    </bean>
+
+    <bean id="corsFilter" class="org.springframework.web.filter.CorsFilter">
+        <constructor-arg ref="corsConfigurationSource"/>
+    </bean>
+
+    <!-- Spring Security Configuration -->
+    <security:http auto-config="true">
+        <!-- CORS 필터 등록 -->
+        <security:custom-filter before="CHANNEL_FILTER" ref="corsFilter"/>
+
+        <!-- URL 접근 제어 -->
+        <security:intercept-url pattern="/sample/all" access="permitAll"/>
+        <security:intercept-url pattern="/sample/member" access="hasRole('ROLE_MEMBER')"/>
+        <security:intercept-url pattern="/sample/admin" access="hasRole('ROLE_ADMIN')"/>
+
+        <!-- 로그인 설정 -->
+        <security:form-login
+            login-page="/member/login"
+            authentication-success-handler-ref="customLoginSuccess"
+			authentication-failure-url="/member/login?error=true"/>
+        <!-- 로그아웃 설정 -->
+        <security:logout logout-url="/Logout" invalidate-session="true" delete-cookies="remember-me"/>
+
+        <!-- 접근 거부 핸들러 -->
+        <security:access-denied-handler ref="customAccessDenied"/>
+
+        <!-- CSRF 비활성화 -->
+        <security:csrf disabled="true"/>
+
+        <!-- Remember-Me 설정 -->
+        <security:remember-me data-source-ref="dataSource" token-validity-seconds="604800"/>
+    </security:http>
+
+    <!-- 인증 관리자 -->
+    <security:authentication-manager alias="authenticationManager">
+        <security:authentication-provider user-service-ref="customUserDetailService">
+            <security:password-encoder ref="bcryptPasswordEncoder"/>
+        </security:authentication-provider>
+    </security:authentication-manager>
+
+</beans>

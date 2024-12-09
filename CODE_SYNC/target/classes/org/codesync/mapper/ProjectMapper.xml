@@ -4,8 +4,17 @@
 
 <mapper namespace="org.codesync.mapper.ProjectMapper">
 	<insert id="createProject" parameterType="org.codesync.domain.ProjectVO"  useGeneratedKeys="true" keyProperty="projectNo">
-		insert into project_tbl (projectName, projectDisclosure, projectDesc, muserNo, projectCreateDate)
-						 values (#{projectName}, #{projectDisclosure}, #{projectDesc}, #{muserNo}, CURRENT_DATE)
+		insert into project_tbl (projectName, projectDisclosure, projectDesc, muserNo, projectCreateDate, token)
+						 values (#{projectName}, #{projectDisclosure}, #{projectDesc}, #{muserNo}, CURRENT_DATE, #{token})
+	</insert>
+	<insert id="createErdSync">
+		insert into erd_tbl (projectNo) values (#{projectNo})
+	</insert>
+	<insert id="createCodeSync">
+		insert into CodeSync_tbl (projectNo) values (#{projectNo})
+	</insert>
+	<insert id="createDocsWrapper">
+		insert into docs_wrapper_tbl (projectNo) values (#{projectNo})
 	</insert>
 	<insert id="insertProjectMasterUser" parameterType="map">
 		insert into project_user_tbl (userNo, projectNo, codeAuth, erdAuth) values (#{userNo}, #{projectNo}, 2, 2)
@@ -45,4 +54,16 @@
 	<select id="chkExpired" parameterType="String" resultType="int">
 		select count(*) from project_invite_tbl where token = #{token}
 	</select>
+	<select id="getProjectErd" resultType="org.codesync.domain.ErdVO">
+		select * from erd_tbl where projectNo = #{projectNo}
+	</select>
+	<select id="getProjectCode" resultType="org.codesync.domain.CodeSyncVO">
+		select * from CodeSync_tbl where projectNo = #{projectNo}
+	</select>
+	<select id="getProjectDocs" resultType="org.codesync.domain.DocsWrapperVO">
+		select * from docs_wrapper_tbl where projectNo = #{projectNo}
+	</select>
+	<delete id="deleteProject">
+		delete from project_tbl where projectNo = #{projectNo}
+	</delete>
 </mapper>

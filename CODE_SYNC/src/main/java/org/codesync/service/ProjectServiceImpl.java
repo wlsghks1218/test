@@ -4,7 +4,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
+import org.codesync.domain.CodeSyncVO;
+import org.codesync.domain.DocsWrapperVO;
+import org.codesync.domain.ErdVO;
 import org.codesync.domain.ProjectInviteVO;
 import org.codesync.domain.ProjectUserVO;
 import org.codesync.domain.ProjectVO;
@@ -12,6 +16,7 @@ import org.codesync.domain.UserDTO;
 import org.codesync.mapper.ProjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.extern.log4j.Log4j;
 
@@ -23,17 +28,26 @@ public class ProjectServiceImpl implements ProjectService{
 	private ProjectMapper mapper;
 	
 	@Override
+	@Transactional
 	public int createProject(ProjectVO pvo) {
+		log.warn("public 여부 : " + pvo.getProjectDisclosure());
+		if(pvo.getProjectDisclosure().equals("public")) {
+			String token = UUID.randomUUID().toString();
+			pvo.setToken(token);
+		}
 	    int result = mapper.createProject(pvo);
 	    if (result > 0) {
 	        Map<String, Integer> map = new HashMap<>();
 	        map.put("userNo", pvo.getMuserNo());
 	        map.put("projectNo", pvo.getProjectNo());
+	        mapper.createErdSync(pvo.getProjectNo());
+	        mapper.createCodeSync(pvo.getProjectNo());
+	        mapper.createDocsWrapper(pvo.getProjectNo());
 	        return mapper.insertProjectMasterUser(map);
 	    }
 	    return 0;
 	}
-	
+
 	@Override
 	public List<ProjectVO> getProjectList(int userNo) {
 	    List<ProjectUserVO> projectListByUserNo = mapper.getProjectList(userNo);
@@ -86,5 +100,26 @@ public class ProjectServiceImpl implements ProjectService{
         int result = mapper.insertProjectMember(map);
         int result2 = mapper.deleteToken(token);
         return "join success";
+	}
+	
+	@Override
+	public ErdVO getProjectErd(int projectNo) {
+		return mapper.getProjectErd(projectNo);
+	}
+	
+	@Override
+	public CodeSyncVO getProjectCode(int projectNo) {
+		return mapper.getProjectCode(projectNo);
+	}
+	
+	@Override
+	public DocsWrapperVO getProjectDocs(int projectNo) {
+		return mapper.getProjectDocs(projectNo);
+	}
+	
+	@Override
+	public boolean deleteProject(int projectNo) {
+		int result = mapper.deleteProject(projectNo); 
+		return result>0;
 	}
 }

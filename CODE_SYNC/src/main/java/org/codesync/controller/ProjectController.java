@@ -10,7 +10,9 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletResponse;
 
-import org.codesync.domain.ProjectUserVO;
+import org.codesync.domain.CodeSyncVO;
+import org.codesync.domain.DocsWrapperVO;
+import org.codesync.domain.ErdVO;
 import org.codesync.domain.ProjectVO;
 import org.codesync.domain.UserDTO;
 import org.codesync.service.ProjectService;
@@ -121,11 +123,37 @@ public class ProjectController {
         String reason = service.acceptProjectInvite(token);
 
         if ("token expired".equals(reason)) {
-            response.sendRedirect("http://localhost:3000/expiredPage");  // 초대 만료 페이지로 리다이렉트
+            response.sendRedirect("http://localhost:3000/expiredPage");
         } else if ("already joined".equals(reason)) {
-            response.sendRedirect("http://localhost:3000/alreadyJoined");  // 이미 참여된 경우 리다이렉트
+            response.sendRedirect("http://localhost:3000/alreadyJoined");
         } else if ("join success".equals(reason)) {
-            response.sendRedirect("http://localhost:3000/");  // 메인 페이지로 리다이렉트
+            response.sendRedirect("http://localhost:3000/");
         }
+    }
+    
+    @GetMapping("/deleteProject")
+    public ResponseEntity<Map<String, Object>> deleteProject(@RequestParam int projectNo) {
+        boolean isDeleted = service.deleteProject(projectNo);
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", isDeleted);
+        return ResponseEntity.ok(response);
+    }
+    
+    @GetMapping("/checkErd")
+    public ErdVO checkErd(@RequestParam("projectNo") int projectNo) {
+    	ErdVO vo = service.getProjectErd(projectNo);
+    	return vo;
+    }
+    
+    @GetMapping("/checkCode")
+    public CodeSyncVO checkCode(@RequestParam("projectNo") int projectNo) {
+    	CodeSyncVO vo = service.getProjectCode(projectNo);
+    	return vo;
+    }
+    
+    @GetMapping("/checkDocs")
+    public DocsWrapperVO checkDocs(@RequestParam("projectNo") int projectNo) {
+    	DocsWrapperVO vo = service.getProjectDocs(projectNo);
+    	return vo;
     }
 }

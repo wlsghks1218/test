@@ -3,4 +3,13 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="org.codesync.mapper.DocsMapper">
+	<select id="getProjectNoByWrapperNo" resultType="int">
+		select projectNo from docs_wrapper_tbl where wrapperNo = #{wrapperNo}
+	</select>
+	<select id="getProjectByProjectNo" resultType="org.codesync.domain.ProjectVO">
+		select * from project_tbl where projectNo = #{projectNo}
+	</select>
+	<select id="getColumns" resultType="org.codesync.domain.DocsColumnVO">
+		select * from docs_column_tbl where wrapperNo = #{wrapperNo}
+	</select>
 </mapper>

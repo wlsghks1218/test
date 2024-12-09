@@ -7,6 +7,6 @@ import lombok.Data;
 @Data
 public class ProjectVO {
 	int projectNo, muserNo;
-	String projectName, projectDesc, projectDisclosure;
+	String projectName, projectDesc, projectDisclosure, token;
 	Date projectCreateDate;
 }

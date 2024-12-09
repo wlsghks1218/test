@@ -46,7 +46,7 @@ public class CustomLogoutHandler implements LogoutHandler {
 
         if (response != null) {
             javax.servlet.http.Cookie rememberMeCookie = new javax.servlet.http.Cookie("remember-me", null);
-            rememberMeCookie.setMaxAge(0); // 즉시 삭제
+            rememberMeCookie.setMaxAge(0);
             rememberMeCookie.setHttpOnly(true);
             rememberMeCookie.setPath("/");
             response.addCookie(rememberMeCookie);

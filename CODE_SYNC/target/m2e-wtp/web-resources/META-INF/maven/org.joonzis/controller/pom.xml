@@ -264,6 +264,12 @@
 			<artifactId>google-api-services-gmail</artifactId>
 			<version>v1-rev110-1.25.0</version>
 		</dependency>
+		<!-- FTP사용  -->
+		<dependency>
+		    <groupId>commons-net</groupId>
+		    <artifactId>commons-net</artifactId>
+		    <version>3.8.0</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
