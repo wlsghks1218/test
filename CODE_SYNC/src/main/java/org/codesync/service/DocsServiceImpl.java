@@ -3,6 +3,7 @@ package org.codesync.service;
 import java.util.List;
 
 import org.codesync.domain.DocsColumnVO;
+import org.codesync.domain.DocsVO;
 import org.codesync.domain.ProjectVO;
 import org.codesync.mapper.DocsMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,49 @@ public class DocsServiceImpl implements DocsService{
 	
 	@Override
 	public List<DocsColumnVO> getColumns(int wrapperNo) {
-		return mapper.getColumns(wrapperNo);
+	    List<DocsColumnVO> voList = mapper.getColumns(wrapperNo);
+
+	    for (DocsColumnVO vo : voList) {
+	        List<DocsVO> files = mapper.getFiles(vo.getColumnNo());
+	        vo.setVoList(files);
+	    }
+
+	    return voList; // 파일 정보를 포함한 컬럼 리스트 반환
+	}
+	
+	@Override
+	public int saveColumn(DocsColumnVO vo) {
+		int result = mapper.saveColumn(vo);
+		return vo.getColumnNo();
+	}
+	
+	@Override
+	public int insertFile(DocsVO vo) {
+		return mapper.insertFile(vo);
+	}
+	
+	@Override
+	public int fileExist(String docsName) {
+		return mapper.fileExist(docsName);
+	}
+	
+	@Override
+	public int updateFile(DocsVO vo) {
+		return mapper.updateFile(vo);
+	}
+	
+	@Override
+	public int checkColumnExist(DocsColumnVO vo) {
+		return mapper.checkColumnExist(vo);
+	}
+	
+	@Override
+	public int updateColumn(DocsColumnVO vo) {
+		return mapper.updateColumn(vo);
+	}
+	
+	@Override
+	public int deleteFile(String uploadPath) {
+		return mapper.deleteFile(uploadPath);
 	}
 }

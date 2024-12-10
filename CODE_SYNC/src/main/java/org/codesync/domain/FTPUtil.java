@@ -3,10 +3,14 @@ package org.codesync.domain;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 
+import lombok.extern.log4j.Log4j;
+
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
+@Log4j
 public class FTPUtil {
 
     private String server;
@@ -74,5 +78,89 @@ public class FTPUtil {
             }
         }
     }
+    
+    public boolean downloadFile(String remotePath, File localFile) {
+        FTPClient ftpClient = new FTPClient();
+        try (FileOutputStream outputStream = new FileOutputStream(localFile)) {
+            ftpClient.connect(server, port);
+            ftpClient.login(user, password);
+            ftpClient.enterLocalPassiveMode();
+            ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
+
+            // FTP 서버에서 파일 다운로드
+            return ftpClient.retrieveFile(remotePath, outputStream);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            try {
+                if (ftpClient.isConnected()) {
+                    ftpClient.logout();
+                    ftpClient.disconnect();
+                }
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+    
+    public boolean deleteFile(String remotePath) {
+        FTPClient ftpClient = new FTPClient();
+        try {
+            ftpClient.connect(server, port);
+            ftpClient.login(user, password);
+            ftpClient.enterLocalPassiveMode();
+
+            return ftpClient.deleteFile(remotePath);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            try {
+                if (ftpClient.isConnected()) {
+                    ftpClient.logout();
+                    ftpClient.disconnect();
+                }
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+    
+    public boolean createDirectory(String remotePath) {
+        FTPClient ftpClient = new FTPClient();
+        try {
+            ftpClient.connect(server, port);
+            ftpClient.login(user, password);
+            ftpClient.enterLocalPassiveMode();
+
+            String[] pathElements = remotePath.split("/");
+            String currentPath = "";
+            for (String folder : pathElements) {
+                currentPath += "/" + folder;
+                if (!ftpClient.changeWorkingDirectory(currentPath)) {
+                    if (!ftpClient.makeDirectory(currentPath)) {
+                        log.warn("디렉토리 생성 실패: "+ currentPath);
+                        return false;
+                    }
+                }
+            }
+            return true;
+        } catch (IOException e) {
+            log.error("디렉토리 생성 중 오류 발생"+ e);
+            return false;
+        } finally {
+            try {
+                if (ftpClient.isConnected()) {
+                    ftpClient.logout();
+                    ftpClient.disconnect();
+                }
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+
+
 }
 

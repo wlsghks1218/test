@@ -7,7 +7,7 @@ import lombok.Data;
 
 @Data
 public class DocsColumnVO {
-	int columnNo, wrapperNo, columnCreator;
+	int columnNo, wrapperNo, columnCreator, columnIndex;
 	String columnName;
 	Timestamp columnCreatedDate;
 	List<DocsVO> voList;

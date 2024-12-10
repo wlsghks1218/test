@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+해당 xml 문서의 구조가 마이바티스의 매퍼를 구성하는 구조로 나타나 있음을 알려주는 설정
+특히 이 설정은 configure 부분의 xml과 다르므로 설정시 주의 필요 
+-->
+<!DOCTYPE mapper 
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.codesync.mapper.CodeSyncMapper"> <!-- 마이바티스 환경 설정 xml에 사용할 이름 -->
+
+<insert id="saveFolder" parameterType="org.codesync.domain.FolderVO">
+    INSERT INTO CodeSync_folder_tbl (CodeSyncNo, parentFolderId, folderName, folderPath)
+        VALUES (#{codeSyncNo}, #{parentFolderId}, #{folderName}, #{folderPath})
+</insert>
+    
+  <select id="findParentFolderId" resultType="int">
+    SELECT folderNo
+    FROM CodeSync_folder_tbl
+    WHERE folderPath = #{folderPath} AND codeSyncNo = #{codeSyncNo}
+</select>
+
+
+    <!-- 부모 폴더 ID 업데이트 -->
+<update id="updateFolderParentId">
+    UPDATE CodeSync_folder_tbl
+    SET parentFolderId = #{parentFolderId}
+    WHERE folderNo = #{folderNo} 
+</update>
+    <select id="getFileNo" resultType="int">
+        SELECT folderNo
+        FROM CodeSync_folder_tbl
+        WHERE folderPath = #{folderPath} AND CodeSyncNo = #{codeSyncNo}
+    </select>
+
+
+  <insert id="insertFile" parameterType="org.codesync.domain.FileVO">
+    INSERT INTO CodeSync_file_tbl (folderNo, fileName, extension, content, filePath)
+    VALUES (#{folderNo}, #{fileName}, #{extension}, #{content}, #{filePath})
+</insert>
+
+<!-- 폴더 조회 쿼리 -->
+<select id="getFoldersByCodeSyncNo" resultType="org.codesync.domain.FolderVO">
+    SELECT * FROM CodeSync_folder_tbl WHERE codeSyncNo = #{codeSyncNo}
+</select>
+
+<!-- 파일 조회 쿼리 -->
+<select id="getFilesByFolderNo" resultType="org.codesync.domain.FileVO">
+    SELECT *
+    FROM CodeSync_file_tbl
+    WHERE folderNo = #{folderNo}
+</select>
+
+</mapper>
