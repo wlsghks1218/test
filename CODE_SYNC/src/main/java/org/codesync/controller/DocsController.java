@@ -3,7 +3,9 @@ package org.codesync.controller;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.codesync.domain.DocsColumnVO;
 import org.codesync.domain.DocsVO;
@@ -222,40 +224,30 @@ public class DocsController {
     }
 
     @GetMapping("/view")
-    public ResponseEntity<UrlResource> viewFile(@RequestParam("filePath") String filePath) {
-        log.warn("파일 열기 요청 - 경로:"+ filePath);
+    public ResponseEntity<String> viewFile(@RequestParam("filePath") String filePath) {
+        log.warn("Requested filePath: " + filePath);
 
         try {
-            // FTP에서 파일 다운로드
-            FTPUtil ftpUtil = new FTPUtil(FTP_SERVER, FTP_PORT, FTP_USER, FTP_PASSWORD);
-            File tempFile = new File(System.getProperty("java.io.tmpdir"), filePath.substring(filePath.lastIndexOf("/") + 1));
+            // NAS URL 생성
+            String nasHttpUrl = "http://116.121.53.142" + filePath; // NAS의 HTTP URL 생성
+            log.warn("Generated NAS URL: " + nasHttpUrl);
 
-            boolean isDownloaded = ftpUtil.downloadFile(filePath, tempFile);
-            if (!isDownloaded) {
-                log.warn("FTP에서 파일 다운로드 실패");
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-            }
-
-            // 파일 MIME 타입 결정
-            String mimeType = Files.probeContentType(tempFile.toPath());
-            if (mimeType == null) {
-                mimeType = "application/octet-stream"; // 기본 MIME 타입
-            }
-
-            UrlResource resource = new UrlResource(tempFile.toURI());
-            if (!resource.exists()) {
-                log.warn("열기 파일이 존재하지 않습니다.");
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-            }
-
-            // 파일 반환
-            return ResponseEntity.ok()
-                    .contentType(MediaType.parseMediaType(mimeType)) // MIME 타입 설정
-                    .body(resource);
+            // 클라이언트에 URL 반환
+            return ResponseEntity.ok(nasHttpUrl);
         } catch (Exception e) {
-            log.error("파일 열기 중 오류 발생", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+            log.error("NAS URL 생성 중 오류 발생", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("파일 URL 생성 중 오류가 발생했습니다.");
         }
     }
 
+
+    @DeleteMapping("/deleteColumn")
+    public int deleteColumn(@RequestParam("wrapperNo") int wrapperNo, @RequestParam("columnIndex") int columnIndex) {
+    	Map<String, Integer> params = new HashMap<>();
+    	params.put("wrapperNo", wrapperNo);
+    	params.put("columnIndex", columnIndex);
+    	int result = service.deleteColumn(params);
+    	return result;
+    }
 }

@@ -25,4 +25,19 @@
 	<select id="getAllUsers" resultType="org.codesync.domain.UserDTO">
 		select * from user_tbl
 	</select>
+	<update id="updateUserId" parameterType="map">
+		update user_tbl set userId = #{userId} where userNo = #{userNo}
+	</update>
+	<select id="getUserInfo" resultType="org.codesync.domain.UserDTO">
+		select * from user_tbl where userNo = #{userNo}
+	</select>
+	<select id="chkPassword" parameterType="map" resultType="int">
+		select count(*) from user_tbl where userPw = #{currentPassword} and userNo = #{userNo}
+	</select>
+	<update id="updatePassword" parameterType="map">
+		update user_tbl set userPw = #{newPassword} where userNo = #{userNo}
+	</update>
+	<update id="updateEmail" parameterType="map">
+		update user_tbl set userEmail = #{email} where userNo = #{userNo}
+	</update>
 </mapper>

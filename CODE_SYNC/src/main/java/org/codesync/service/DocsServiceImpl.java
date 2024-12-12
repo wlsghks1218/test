@@ -1,6 +1,7 @@
 package org.codesync.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.codesync.domain.DocsColumnVO;
 import org.codesync.domain.DocsVO;
@@ -74,4 +75,10 @@ public class DocsServiceImpl implements DocsService{
 	public int deleteFile(String uploadPath) {
 		return mapper.deleteFile(uploadPath);
 	}
+	
+	@Override
+	public int deleteColumn(Map<String, Integer> params) {
+		return mapper.deleteColumn(params);
+	}
+	
 }

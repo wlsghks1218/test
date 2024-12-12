@@ -136,9 +136,45 @@ public class MemberController {
     	log.warn("모든 유저 정보" + service.getAllUsers());
     	return service.getAllUsers();
     }
-//    
-//    @GetMapping("/login")
-//    public String loginPage() {
-//        return "forward:/index.html";
-//    }
+    
+    @PostMapping("/updateUserId")
+    public int updateUserId(@RequestBody Map<String, String> requestData){
+    	int result = service.updateUserId(requestData);
+    	return result;
+    }
+    
+    @GetMapping("/getUserInfo")
+    public UserDTO getUserInfo(@RequestParam("userNo") int userNo) {
+    	UserDTO vo = service.getUserInfo(userNo);
+    	return vo;
+    }
+    
+    @PostMapping("/chkPassword")
+    public int  chkPassword(@RequestBody Map<String, String> requestData) {
+    	UserDTO vo = service.getUserInfo(Integer.parseInt(requestData.get("userNo")));
+    	String rawPassword = requestData.get("currentPassword");
+    	boolean matches = pwencoder.matches(rawPassword, vo.getUserPw());
+    	if(matches) {
+    		return 1;
+    	}else {
+    		return 0;
+    	}
+    }
+    
+    @PostMapping("/updatePassword")
+    public int updatePassword(@RequestBody Map<String, String> requestData) {
+    	int userNo = Integer.parseInt(requestData.get("userNo"));
+    	String newPassword = pwencoder.encode(requestData.get("newPassword"));
+    	Map<String, Object> params = new HashMap<>();
+    	params.put("userNo", userNo);
+    	params.put("newPassword", newPassword);
+    	int result = service.updatePassword(params);
+    	return result;
+    }
+    
+    @PostMapping("/updateEmail")
+    public int updateEmail(@RequestBody Map<String, String> requestData) {
+    	int result = service.updateEmail(requestData);
+    	return result;
+    }
 }

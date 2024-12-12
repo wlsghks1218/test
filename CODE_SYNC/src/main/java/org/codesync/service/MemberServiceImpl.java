@@ -74,4 +74,29 @@ public class MemberServiceImpl implements MemberService{
     public List<UserDTO> getAllUsers() {
     	return mapper.getAllUsers();
     }
+    
+    @Override
+    public int updateUserId(Map<String, String> requestData) {
+    	return mapper.updateUserId(requestData); 
+    }
+    
+    @Override
+    public UserDTO getUserInfo(int UserNo) {
+    	return mapper.getUserInfo(UserNo);
+    }
+    
+    @Override
+    public int chkPassword(Map<String, String> requestData) {
+    	return mapper.chkPassword(requestData);
+    }
+    
+    @Override
+    public int updatePassword(Map<String, Object> params) {
+    	return mapper.updatePassword(params);
+    }
+    
+    @Override
+    public int updateEmail(Map<String, String> requestData) {
+    	return mapper.updateEmail(requestData);
+    }
 }

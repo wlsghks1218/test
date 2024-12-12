@@ -38,4 +38,7 @@
 	<delete id="deleteFile">
 		delete from docs_tbl where uploadPath = #{uploadPath}
 	</delete>
+	<delete id="deleteColumn" parameterType="map">
+		delete from docs_column_tbl where wrapperNo = #{wrapperNo} and columnIndex = #{columnIndex}
+	</delete>
 </mapper>

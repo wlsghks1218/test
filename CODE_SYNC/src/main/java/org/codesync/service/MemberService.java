@@ -1,6 +1,7 @@
 package org.codesync.service;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.mail.MessagingException;
 
@@ -11,4 +12,9 @@ public interface MemberService {
     public String sendVerificationEmail(String email) throws MessagingException;
     public boolean registerUser(UserDTO userDTO);
     public List<UserDTO> getAllUsers();
+    public int updateUserId(Map<String, String> requestData);
+    public UserDTO getUserInfo(int UserNo);
+    public int chkPassword(Map<String, String> requestData);
+    public int updatePassword(Map<String, Object> params);
+    public int updateEmail(Map<String, String> requestData);
 }

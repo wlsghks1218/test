@@ -1,6 +1,7 @@
 package org.codesync.mapper;
 
 import java.util.List;
+import java.util.Map;
 
 import org.codesync.domain.DocsColumnVO;
 import org.codesync.domain.DocsVO;
@@ -18,4 +19,6 @@ public interface DocsMapper {
 	public List<DocsVO> getFiles(int columnNo);
 	public int updateColumn(DocsColumnVO vo);
 	public int deleteFile(String uploadPath);
+	public int deleteColumn(Map<String, Integer> params);
+	
 }

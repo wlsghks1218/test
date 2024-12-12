@@ -1,6 +1,7 @@
 package org.codesync.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.codesync.domain.DocsColumnVO;
 import org.codesync.domain.DocsVO;
@@ -16,4 +17,5 @@ public interface DocsService {
 	public int updateFile(DocsVO vo);
 	public int updateColumn(DocsColumnVO vo);
 	public int deleteFile(String uploadPath);
+	public int deleteColumn(Map<String, Integer> params);
 }
