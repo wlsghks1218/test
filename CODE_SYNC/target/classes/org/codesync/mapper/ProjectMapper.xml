@@ -46,7 +46,7 @@
 	</select>
 	<insert id="insertProjectMember" parameterType="map">
 		insert into project_user_tbl (userNo, projectNo, codeAuth, erdAuth)
-							  values (#{userNo}, #{projectNo}, 1, 1)
+							  values (#{userNo}, #{projectNo}, 2, 2)
 	</insert>
 	<delete id="deleteToken" parameterType="String">
 		delete from project_invite_tbl where token = #{token}
@@ -71,5 +71,18 @@
 	</select>
 	<select id="getInvitedUserInfo" resultType="org.codesync.domain.UserDTO">
 		select * from user_tbl where userNo = #{userNo}
+	</select>
+	<select id="getProjectNoByToken" resultType="int">
+		select projectNo from project_tbl where token = #{projectToken}
+	</select>
+	<insert id="joinProjectByToken" parameterType="map">
+		insert into project_user_tbl (userNo, projectNo, codeAuth, erdAuth)
+							   values(#{userNo}, #{projectNo}, 2, 2)
+	</insert>
+	<select id="chkProjectJoin" parameterType="map" resultType="int">
+		select count(*) from project_user_tbl where userNo = #{userNo} and projectNo = #{projectNo}
+	</select>
+	<select id="chkProjectExist" parameterType="String" resultType="int">
+		select count(*) from project_tbl where token = #{projectToken}
 	</select>
 </mapper>

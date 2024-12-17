@@ -13,20 +13,27 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.codesync.mapper.MemberMapper;
+import org.codesync.mapper.ProjectMapper;
+import org.codesync.security.domain.CustomUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.log4j.Log4j;
 
 @Log4j
+@CrossOrigin(origins = "*")
 public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler{
 	
 	@Autowired
 	private MemberMapper mapper;
+	
+	@Autowired
+	private ProjectMapper pmapper;
 	
 	@Override
 		public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -35,6 +42,45 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler{
 			log.warn("아이고 죽겠네" + request.getAttribute("remember-me"));
 			boolean rememberMeAttribute = (Boolean)request.getAttribute("remember-me");
 	       	String userId = authentication.getName();
+	       	
+	        HttpSession session = request.getSession();
+	        String projectToken = (String) session.getAttribute("token");
+	        log.warn("token info : " + projectToken);
+	        if(projectToken != null) {
+	        	Object principal = authentication.getPrincipal();
+	        	CustomUser customUser = (CustomUser) principal;
+	        	int userNo = customUser.getUser().getUserNo();
+	        	log.warn("로그인 유저의 userNo: " + userNo);
+	        	
+	            int result4 = pmapper.chkProjectExist(projectToken);
+	            if(result4 == 0) {
+	            	session.removeAttribute("token");
+	            	response.sendRedirect("http://localhost:3000/invalidProject");
+	            	return;
+	            }
+	        	
+	        	int result = mapper.getProjectCount(userNo);
+	        	if(result >= 3) {
+	        		session.removeAttribute("token");
+	        		response.sendRedirect("http://localhost:3000/projectLimit");
+	        	}
+	        	
+	        	int projectNo = pmapper.getProjectNoByToken(projectToken);
+	        	
+	        	Map<String, Integer> params = new HashMap<>();
+	        	params.put("userNo", userNo);
+	        	params.put("projectNo", projectNo);
+	        	int result3 = pmapper.chkProjectJoin(params);
+	        	if(result3 > 0) {
+	        		session.removeAttribute("token");
+	        		response.sendRedirect("http://localhost:3000/alreadyJoined");
+	        	}else {
+	        		int result2 = pmapper.joinProjectByToken(params);
+	        		session.removeAttribute("token");
+	        		response.sendRedirect("http://localhost:3000/");
+	        	}
+	        }
+	        
 			
 	        if (rememberMeAttribute) {
 	        	log.warn("여기타는거임");
@@ -64,19 +110,11 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler{
 
 	        log.warn("ROLE NAME : " + roleNames);
 	        
-	        HttpSession session = request.getSession();
-	        if (session == null) {
-	            log.warn("세션이 존재하지 않습니다!");
-	        } else {
-	            log.warn("세션 ID : " + session.getId());
-	        }
 	        session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
 	        session.setAttribute("userId", userId);
 	        session.setAttribute("roles", roleNames);
 	        session.setAttribute("principal", principal);
 
-	        response.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
-	        response.setHeader("Access-Control-Allow-Credentials", "true");
 	        response.setContentType("application/json");
 	        response.setCharacterEncoding("UTF-8");
 

@@ -21,4 +21,8 @@ public interface ProjectService {
 	public DocsWrapperVO getProjectDocs(int projectNo);
 	public boolean deleteProject(int projectNo);
 	public List<UserDTO> getInvitedUsers(int projectNo);
+	public int getProjectNoByToken(String projectToken);
+	public int joinProjectByToken(Map<String, Integer> params);
+	public int chkProjectJoin(Map<String, Integer> params);
+	public int chkProjectExist(String projectToken);
 }

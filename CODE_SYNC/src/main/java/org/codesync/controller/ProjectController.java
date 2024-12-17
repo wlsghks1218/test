@@ -9,20 +9,27 @@ import java.util.UUID;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.codesync.domain.CodeSyncVO;
 import org.codesync.domain.DocsWrapperVO;
 import org.codesync.domain.ErdVO;
 import org.codesync.domain.ProjectVO;
 import org.codesync.domain.UserDTO;
+import org.codesync.security.domain.CustomUser;
+import org.codesync.service.MemberService;
 import org.codesync.service.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,6 +46,9 @@ public class ProjectController {
 	
 	@Autowired
 	private ProjectService service;
+	
+	@Autowired
+	private MemberService mservice;
 	
     @Autowired
     private JavaMailSender mailSender;
@@ -163,5 +173,52 @@ public class ProjectController {
     	return vo;
     }
     
-    
+    @GetMapping("/{projectToken}")
+    public void joinProjectByToken(@PathVariable String projectToken, HttpSession session, HttpServletResponse response)throws IOException {
+    	log.warn("어서오세요");
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        
+        if (authentication == null || !authentication.isAuthenticated() || authentication.getPrincipal().equals("anonymousUser")) {
+        	log.warn("로그인되지 않음");
+        	session.setAttribute("token", projectToken);
+        	response.sendRedirect("http://localhost:3000/login");
+        	return;
+        }
+        
+        log.warn("로그인되어 있음");
+        Object principal = authentication.getPrincipal();
+        CustomUser customUser = (CustomUser) principal;
+        int userNo = customUser.getUser().getUserNo();
+        log.warn("로그인 유저의 userNo: " + userNo);
+        int result4 = service.chkProjectExist(projectToken);
+        if(result4 == 0) {
+        	session.removeAttribute("token");
+        	response.sendRedirect("http://localhost:3000/invalidProject");
+        	return;
+        }
+        
+        int result = mservice.getProjectCount(userNo);
+        if(result >= 3) {
+        	session.removeAttribute("token");
+        	response.sendRedirect("http://localhost:3000/projectLimit");
+        	return;
+        }
+        
+        String userId = authentication.getName();
+        int projectNo = service.getProjectNoByToken(projectToken);
+        
+        
+        Map<String, Integer> params = new HashMap<>();
+        params.put("userNo", userNo);
+        params.put("projectNo", projectNo);
+        int result3 = service.chkProjectJoin(params);
+        if(result3 > 0) {
+        	session.removeAttribute("token");
+        	response.sendRedirect("http://localhost:3000/alreadyJoined");
+        }else {
+        	int result2 = service.joinProjectByToken(params);
+        	session.removeAttribute("token");
+	    	response.sendRedirect("http://localhost:3000/");
+        }
+    }
 }

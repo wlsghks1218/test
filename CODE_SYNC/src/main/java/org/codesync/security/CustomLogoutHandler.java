@@ -32,7 +32,7 @@ public class CustomLogoutHandler implements LogoutHandler {
             }
         }
 
-//        SecurityContextHolder.clearContext();
+        SecurityContextHolder.clearContext();
 
         HttpSession session = request.getSession(false);
         if (session != null) {

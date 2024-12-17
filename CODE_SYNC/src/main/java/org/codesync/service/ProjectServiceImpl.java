@@ -14,6 +14,7 @@ import org.codesync.domain.ProjectInviteVO;
 import org.codesync.domain.ProjectUserVO;
 import org.codesync.domain.ProjectVO;
 import org.codesync.domain.UserDTO;
+import org.codesync.mapper.MemberMapper;
 import org.codesync.mapper.ProjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,9 @@ public class ProjectServiceImpl implements ProjectService{
 	
 	@Autowired
 	private ProjectMapper mapper;
+	
+	@Autowired
+	private MemberMapper mmapper;
 	
 	@Override
 	@Transactional
@@ -143,4 +147,23 @@ public class ProjectServiceImpl implements ProjectService{
 	    return invitedUserList;
 	}
 
+	@Override
+	public int getProjectNoByToken(String projectToken) {
+		return mapper.getProjectNoByToken(projectToken);
+	}
+	
+	@Override
+	public int joinProjectByToken(Map<String, Integer> params) {
+		return mapper.joinProjectByToken(params);
+	}
+	
+	@Override
+	public int chkProjectJoin(Map<String, Integer> params) {
+		return mapper.chkProjectJoin(params);
+	}
+	
+	@Override
+	public int chkProjectExist(String projectToken) {
+		return mapper.chkProjectExist(projectToken);
+	}
 }

@@ -34,4 +34,8 @@ public interface ProjectMapper {
 	public int deleteProject(int projectNo);
 	public List<Integer> getInvitedUserNo(int projectNo);
 	public UserDTO getInvitedUserInfo(int userNo);
+	public int getProjectNoByToken(String projectToken);
+	public int joinProjectByToken(Map<String, Integer> params);
+	public int chkProjectJoin(Map<String, Integer> params);
+	public int chkProjectExist(String projectToken);
 }
