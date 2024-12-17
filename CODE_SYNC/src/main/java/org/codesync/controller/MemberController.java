@@ -99,7 +99,7 @@ public class MemberController {
     	}
     }
 
-    @PostMapping("/login") // 경로 임의 설정
+    @PostMapping("/login")
     public void  login(@RequestBody LoginRequest loginRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException{
     	log.warn("loginRequest : "+ loginRequest);
 		    UsernamePasswordAuthenticationToken authToken =
@@ -112,7 +112,6 @@ public class MemberController {
 		    request.setAttribute("remember-me", loginRequest.isRememberMe());
 		    log.warn(request.getParameter("remember-me"));
     			
-    		// 인증이 성공하면 CustomUserDetailsService가 호출되어 사용자가 반환됨
 		    customLoginSuccessHandler.onAuthenticationSuccess(request, response, auth);
     }
     
@@ -120,6 +119,7 @@ public class MemberController {
     public ResponseEntity<String> logout(@RequestBody Map<String, String> requestBody, HttpServletRequest request, HttpServletResponse response) {
         log.warn("여기 타는건가여");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        log.warn("logout authentication : " + SecurityContextHolder.getContext().getAuthentication());
         log.warn("logout authentication : " + authentication);
         String userId = requestBody.get("userId"); // 클라이언트에서 전송된 userId 추출
         log.warn("로그아웃 요청 userId: " + userId);
@@ -180,5 +180,10 @@ public class MemberController {
     public int updateEmail(@RequestBody Map<String, String> requestData) {
     	int result = service.updateEmail(requestData);
     	return result;
+    }
+    
+    @GetMapping("/user")
+    public Authentication getUser() {
+      return SecurityContextHolder.getContext().getAuthentication();
     }
 }

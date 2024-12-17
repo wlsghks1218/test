@@ -1,5 +1,6 @@
 package org.codesync.security.domain;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 
@@ -11,7 +12,7 @@ import org.springframework.security.core.userdetails.User;
 import lombok.Getter;
 
 @Getter
-public class CustomUser extends User {
+public class CustomUser extends User implements Serializable{
 
 	private UserDTO user;
 

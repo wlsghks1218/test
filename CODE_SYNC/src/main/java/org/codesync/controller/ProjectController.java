@@ -162,4 +162,6 @@ public class ProjectController {
     	List<UserDTO> vo = service.getInvitedUsers(projectNo);
     	return vo;
     }
+    
+    
 }

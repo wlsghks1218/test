@@ -15,6 +15,7 @@ import javax.servlet.http.HttpSession;
 import org.codesync.mapper.MemberMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -64,10 +65,18 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler{
 	        log.warn("ROLE NAME : " + roleNames);
 	        
 	        HttpSession session = request.getSession();
+	        if (session == null) {
+	            log.warn("세션이 존재하지 않습니다!");
+	        } else {
+	            log.warn("세션 ID : " + session.getId());
+	        }
+	        session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
 	        session.setAttribute("userId", userId);
 	        session.setAttribute("roles", roleNames);
 	        session.setAttribute("principal", principal);
 
+	        response.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+	        response.setHeader("Access-Control-Allow-Credentials", "true");
 	        response.setContentType("application/json");
 	        response.setCharacterEncoding("UTF-8");
 
