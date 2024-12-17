@@ -1,7 +1,9 @@
 package org.codesync.controller;
 
 import java.nio.file.Files;
+import java.util.Map;
 
+import org.codesync.domain.FileVO;
 import org.codesync.domain.FolderStructureVO;
 import org.codesync.domain.FolderVO;
 import org.codesync.service.CodeSyncService;
@@ -128,6 +130,11 @@ public class CodeSyncController {
             // 서버 에러 발생 시 500 반환
             return ResponseEntity.status(500).body(null);
         }
+    }
+    @PostMapping("/getFileNo")
+    public Integer getFileNo(@RequestBody FileVO request) {
+        // folderNo와 fileName을 사용하여 fileNo 조회
+        return service.getFileNoByFolderAndFileName(request.getFolderNo(), request.getFileName());
     }
 
 }

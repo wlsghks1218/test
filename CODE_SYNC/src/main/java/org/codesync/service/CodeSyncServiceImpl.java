@@ -11,7 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import lombok.extern.log4j.Log4j;
+
 @Service
+@Log4j
 public class CodeSyncServiceImpl implements CodeSyncService {
 
     @Autowired
@@ -99,6 +102,47 @@ public class CodeSyncServiceImpl implements CodeSyncService {
             throw new RuntimeException("Failed to fetch folder structure for codeSyncNo: " + codeSyncNo, e);
         }
     }
+    @Override
+    public Integer getFileNoByFolderAndFileName(int folderNo, String fileName) {
+    	System.out.println("서비스의 folderNo " + folderNo);
+    	System.out.println("서비스의 fileName " + fileName);
+        // folderNo와 fileName을 사용하여 fileNo를 조회하는 로직
+        return mapper.getFileNoByFolderAndFileName(folderNo, fileName);
+    }
 
+	@Override
+	public boolean checkFileLock(FileVO file) {
+		int codeSyncNo = file.getCodeSyncNo();
+		log.info("파일 잠금상태 체크용 코드싱크넘버 : "+ codeSyncNo);
+		int fileNo = file.getFileNo();
+		log.info("파일 잠금상태 체크용 파일 넘버 : "+fileNo);
+		String isLocked = mapper.checkFileLock(fileNo);
+		log.info(isLocked);
+		boolean result;
+		if ("UNLOCKED".equals(isLocked)) {
+            result = false;
+		}else {
+			result = true;
+		}
+
+		return result;
+	}
+@Override
+public void lockFile(FileVO file) {
+	int lockedBy = file.getLockedBy();
+	int fileNo = file.getFileNo();
+	
+	mapper.lockFile(lockedBy,fileNo);
+}
+@Override
+public FileVO getLockedFileByUser(int lockedBy) {
+	return mapper.getLockedFileByUser(lockedBy);
+}
+@Override
+public void unlockFile(FileVO file) {
+	int lockedBy = file.getLockedBy();
+	mapper.unlockFile(lockedBy);
+	
+}
 }
 

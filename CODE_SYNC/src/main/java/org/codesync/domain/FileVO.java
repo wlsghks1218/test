@@ -24,6 +24,7 @@ public class FileVO {
 	    LOCKED,
 	    UNLOCKED
 	}
+	 private String code;   
 	private int lockedBy;
 	private Timestamp lockTime;
 	private int createdBy;

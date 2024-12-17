@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.codesync.mapper.ChatMapper">
+	<insert id="insertChatContent"
+		parameterType="org.codesync.domain.ChatContentVO">
+		insert into erd_chat_tbl (erdNo, userNo, content, chatTime, userId)
+		values (#{erdNo}, #{userNo}, #{content}, #{chatTime}, #{userId})
+	</insert>
+</mapper>

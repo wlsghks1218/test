@@ -22,6 +22,17 @@ public interface CodeSyncService {
 
 	FolderStructureVO getFolderStructureByCodeSyncNo(int codeSyncNo);
 
+	Integer getFileNoByFolderAndFileName(int folderNo, String fileName);
+
+	boolean checkFileLock(FileVO file);
+
+	void lockFile(FileVO file);
+
+	void unlockFile(FileVO previouslyLockedFile);
+
+	FileVO getLockedFileByUser(int lockedBy);
+
+
 
 
 
