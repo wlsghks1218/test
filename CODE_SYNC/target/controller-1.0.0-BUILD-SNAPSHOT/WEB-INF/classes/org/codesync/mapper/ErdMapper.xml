@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.codesync.mapper.ErdMapper">
+	<select id="getUserId" resultType="String">
+		select userId from user_tbl
+		where userNo = #{userNo}
+	</select>
+
+	<select id="getChatHistory"
+		resultType="org.codesync.domain.ChatContentVO">
+    <![CDATA[
+    SELECT
+        erdNo,
+        userNo,
+        userId,
+        content,
+        chatTime
+    FROM erd_chat_tbl
+    WHERE erdNo = #{erdNo}
+      AND chatTime >= CONCAT(CURDATE(), ' 00:00:00')
+      AND chatTime < CONCAT(CURDATE() + INTERVAL 1 DAY, ' 00:00:00')
+    ORDER BY chatTime ASC
+    ]]>
+	</select>
+
+	<insert id="createTable"
+		parameterType="org.codesync.domain.TableVO">
+		INSERT INTO erd_table_tbl (erdNo, userNo, tableName,
+		xaxis, yaxis, id)
+		VALUES (#{erdNo}, #{userNo}, #{tableName}, #{xaxis},
+		#{yaxis}, #{id})
+	</insert>
+
+	<select id="getTables" resultType="org.codesync.domain.TableVO">
+		select * from erd_table_tbl
+		where erdNo = #{erdNo}
+	</select>
+
+	<delete id="deleteTable">
+		delete from erd_table_tbl where erdNo = #{erdNo} and
+		id = #{id}
+	</delete>
+
+	<update id="updateTablePosition"
+		parameterType="org.codesync.domain.TableVO">
+		update erd_table_tbl
+		set xaxis = #{xaxis}, yaxis = #{yaxis} 
+		where erdNo = #{erdNo} and id = #{id}
+	</update>
+	
+	<insert id="createMemo" parameterType="org.codesync.domain.MemoVO">
+		insert into erd_memo_tbl (erdNo, content, xaxis, yaxis, id)
+		values (#{erdNo}, #{content}, #{xaxis}, #{yaxis}, #{id})
+	</insert>
+	
+	<select id="getMemos" resultType="org.codesync.domain.MemoVO">
+		select * from erd_memo_tbl
+		where erdNo = #{erdNo}
+	</select>
+	
+	<delete id="deleteMemo">
+		delete from erd_memo_tbl where erdNo = #{erdNo} and
+		id = #{id}
+	</delete>
+	
+	<update id="updateMemo" parameterType="org.codesync.domain.MemoVO">
+		update erd_memo_tbl
+		set content = #{content}
+		where erdNo = #{erdNo} and id = #{id}
+	</update> 
+	
+	<update id="updateMemoPosition"
+		parameterType="org.codesync.domain.MemoVO">
+		update erd_memo_tbl
+		set xaxis = #{xaxis}, yaxis = #{yaxis} 
+		where erdNo = #{erdNo} and id = #{id}
+	</update>
+	
+	<insert id="createArrow" parameterType="org.codesync.domain.ArrowVO">
+		insert into erd_arrow_tbl (erdNo, startXaxis, startYaxis, endXaxis, endYaxis, startId, endId)
+		values (#{erdNo}, #{startXaxis}, #{startYaxis}, #{endXaxis}, #{endYaxis}, #{startId}, #{endId})
+	</insert>
+	
+	<select id="getArrows" resultType="org.codesync.domain.ArrowVO">
+		select * from erd_arrow_tbl
+		where erdNo = #{erdNo}
+	</select>
+	
+	<delete id="deleteArrow">
+		delete from erd_arrow_tbl where erdNo = #{erdNo} and
+		startId = #{startId} and endId = #{endId}
+	</delete>
+</mapper>

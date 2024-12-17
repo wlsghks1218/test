@@ -40,4 +40,7 @@
 	<update id="updateEmail" parameterType="map">
 		update user_tbl set userEmail = #{email} where userNo = #{userNo}
 	</update>
+	<select id="getProjectCount" resultType="int">
+		select count(*) from project_user_tbl where userNo = #{userNo}
+	</select>
 </mapper>

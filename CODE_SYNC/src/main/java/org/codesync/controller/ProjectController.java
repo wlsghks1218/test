@@ -156,4 +156,10 @@ public class ProjectController {
     	DocsWrapperVO vo = service.getProjectDocs(projectNo);
     	return vo;
     }
+    
+    @GetMapping("/getInvitedUsers")
+    public List<UserDTO> getInvitedUsers(@RequestParam("projectNo") int projectNo){
+    	List<UserDTO> vo = service.getInvitedUsers(projectNo);
+    	return vo;
+    }
 }

@@ -44,11 +44,49 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     SELECT * FROM CodeSync_folder_tbl WHERE codeSyncNo = #{codeSyncNo}
 </select>
 
+
+
 <!-- 파일 조회 쿼리 -->
 <select id="getFilesByFolderNo" resultType="org.codesync.domain.FileVO">
     SELECT *
     FROM CodeSync_file_tbl
     WHERE folderNo = #{folderNo}
 </select>
+
+<select id="getFileNoByFolderAndFileName" resultType="Integer">
+    SELECT fileNo
+    FROM CodeSync_file_tbl
+    WHERE folderNo = #{folderNo}
+    AND fileName = #{fileName}
+</select>
+<select id="checkFileLock" resultType="String">
+    SELECT lockStatus
+    FROM CodeSync_file_tbl
+    WHERE fileNo = #{fileNo}
+</select>
+
+<update id="lockFile" parameterType="map">
+    UPDATE CodeSync_file_tbl
+    SET
+        lockStatus = 'LOCKED',
+        lockedBy = #{lockedBy},
+        lockTime = CURRENT_TIMESTAMP
+    WHERE fileNo = #{fileNo}
+</update>
+
+<select id="getLockedFileByUser" resultType="org.codesync.domain.FileVO">
+    SELECT *
+    FROM CodeSync_file_tbl
+    WHERE lockedBy = #{lockedBy}
+</select>
+
+<update id="unlockFile" parameterType="int">
+    UPDATE CodeSync_file_tbl
+    SET
+        lockStatus = 'UNLOCKED',
+        lockedBy = 0,
+        lockTime = NULL
+    WHERE lockedBy = #{lockedBy}
+</update>
 
 </mapper>

@@ -17,4 +17,5 @@ public interface MemberService {
     public int chkPassword(Map<String, String> requestData);
     public int updatePassword(Map<String, Object> params);
     public int updateEmail(Map<String, String> requestData);
+    public int getProjectCount(int userNo);
 }

@@ -12,4 +12,33 @@
 	<select id="getColumns" resultType="org.codesync.domain.DocsColumnVO">
 		select * from docs_column_tbl where wrapperNo = #{wrapperNo}
 	</select>
+	<insert id="saveColumn" useGeneratedKeys="true" keyProperty="columnNo">
+		insert into docs_column_tbl (wrapperNo, columnIndex, columnName, columnCreator)
+							  values(#{wrapperNo}, #{columnIndex}, #{columnName}, #{columnCreator})
+	</insert>
+	<insert id="insertFile">
+		insert into docs_tbl (columnNo, docsType, docsName, uploadPath, uploadUserNo)
+					   values(#{columnNo}, #{docsType}, #{docsName}, #{uploadPath}, #{uploadUserNo})
+	</insert>
+	<select id="fileExist" resultType="int">
+		select count(*) from docs_tbl where uploadPath = #{uploadPath}
+	</select>
+	<update id="updateFile">
+		update docs_tbl set uploadTime = CURRENT_TIMESTAMP, docsType = #{docsType}, docsName=#{docsName}, uploadUserNo = #{uploadUserNo} where uploadPath = #{uploadPath}
+	</update>
+	<select id="getFiles" resultType="org.codesync.domain.DocsVO">
+		select * from docs_tbl where columnNo = #{columNo}
+	</select>
+	<select id="checkColumnExist" resultType="int">
+		select count(*) from docs_column_tbl where columnIndex = #{columnIndex} and wrapperNo = #{wrapperNo}
+	</select>
+	<update id="updateColumn">
+		update docs_column_tbl set columnName = #{columnName}, columnCreator = #{columnCreator} where wrapperNo=#{wrapperNo} and columnIndex = #{columnIndex}
+	</update>
+	<delete id="deleteFile">
+		delete from docs_tbl where uploadPath = #{uploadPath}
+	</delete>
+	<delete id="deleteColumn" parameterType="map">
+		delete from docs_column_tbl where wrapperNo = #{wrapperNo} and columnIndex = #{columnIndex}
+	</delete>
 </mapper>

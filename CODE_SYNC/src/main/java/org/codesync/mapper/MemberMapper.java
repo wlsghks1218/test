@@ -13,9 +13,10 @@ public interface MemberMapper {
 	public int insertRememberMe(Map<String, Object> params);
 	public List<UserDTO> getAllUsers();
 	public int updateUserId(Map<String, String> requestData);
-	public UserDTO getUserInfo(int UserNo);
+	public UserDTO getUserInfo(int userNo);
     public int chkPassword(Map<String, String> requestData);
     public int updatePassword(Map<String, Object> params);
     public int updateEmail(Map<String, String> requestData);
+    public int getProjectCount(int userNo);
 }
 

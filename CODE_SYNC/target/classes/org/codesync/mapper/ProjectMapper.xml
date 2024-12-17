@@ -66,4 +66,10 @@
 	<delete id="deleteProject">
 		delete from project_tbl where projectNo = #{projectNo}
 	</delete>
+	<select id="getInvitedUserNo" resultType="int">
+		select userNo from project_invite_tbl where projectNo = #{projectNo}
+	</select>
+	<select id="getInvitedUserInfo" resultType="org.codesync.domain.UserDTO">
+		select * from user_tbl where userNo = #{userNo}
+	</select>
 </mapper>

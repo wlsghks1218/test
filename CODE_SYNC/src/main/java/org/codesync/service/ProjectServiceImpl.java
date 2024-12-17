@@ -1,6 +1,7 @@
 package org.codesync.service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -122,4 +123,24 @@ public class ProjectServiceImpl implements ProjectService{
 		int result = mapper.deleteProject(projectNo); 
 		return result>0;
 	}
+	
+	@Override
+	public List<UserDTO> getInvitedUsers(int projectNo) {
+	    List<Integer> userNoList = mapper.getInvitedUserNo(projectNo);
+	    
+	    if (userNoList == null || userNoList.isEmpty()) {
+	        return Collections.emptyList();
+	    }
+	    
+	    List<UserDTO> invitedUserList = new ArrayList<>();
+	    
+	    for (int userNo : userNoList) {
+	        UserDTO userInfo = mapper.getInvitedUserInfo(userNo);
+	        if (userInfo != null) {
+	            invitedUserList.add(userInfo);
+	        }
+	    }
+	    return invitedUserList;
+	}
+
 }

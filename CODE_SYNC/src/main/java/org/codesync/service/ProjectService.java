@@ -20,4 +20,5 @@ public interface ProjectService {
 	public CodeSyncVO getProjectCode(int projectNo);
 	public DocsWrapperVO getProjectDocs(int projectNo);
 	public boolean deleteProject(int projectNo);
+	public List<UserDTO> getInvitedUsers(int projectNo);
 }

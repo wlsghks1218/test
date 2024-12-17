@@ -32,4 +32,6 @@ public interface ProjectMapper {
 	public int createCodeSync(int projectNo);
 	public int createDocsWrapper(int projectNo);
 	public int deleteProject(int projectNo);
+	public List<Integer> getInvitedUserNo(int projectNo);
+	public UserDTO getInvitedUserInfo(int userNo);
 }

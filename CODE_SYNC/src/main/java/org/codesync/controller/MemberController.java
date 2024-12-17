@@ -133,8 +133,12 @@ public class MemberController {
     
     @GetMapping("/getAllUsers")
     public List<UserDTO> getAllUsers(){
-    	log.warn("모든 유저 정보" + service.getAllUsers());
-    	return service.getAllUsers();
+    	List<UserDTO> users = service.getAllUsers();
+    	users.forEach(user -> {
+    		int count = service.getProjectCount(user.getUserNo());
+    		user.setProjectCount(count);
+    	});
+    	return users;
     }
     
     @PostMapping("/updateUserId")

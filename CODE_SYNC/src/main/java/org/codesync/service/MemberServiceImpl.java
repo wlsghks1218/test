@@ -99,4 +99,9 @@ public class MemberServiceImpl implements MemberService{
     public int updateEmail(Map<String, String> requestData) {
     	return mapper.updateEmail(requestData);
     }
+    
+    @Override
+    public int getProjectCount(int userNo) {
+    	return mapper.getProjectCount(userNo);
+    }
 }
