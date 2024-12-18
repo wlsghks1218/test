@@ -25,4 +25,7 @@ public interface ProjectService {
 	public int joinProjectByToken(Map<String, Integer> params);
 	public int chkProjectJoin(Map<String, Integer> params);
 	public int chkProjectExist(String projectToken);
+	public int removeUser(Map<String, Integer> params);
+	public int cancelInvitation(Map<String, Integer> params);
+	public ProjectVO getProjectByProjectNo(int projectNo);
 }

@@ -85,4 +85,10 @@
 	<select id="chkProjectExist" parameterType="String" resultType="int">
 		select count(*) from project_tbl where token = #{projectToken}
 	</select>
+	<delete id="removeUser" parameterType="map">
+		delete from project_user_tbl where projectNo = #{projectNo} and userNo = #{userNo}
+	</delete>
+	<delete id="cancelInvitation" parameterType="map">
+		delete from project_invite_tbl where projectNo = #{projectNo} and userNo = #{userNo}
+	</delete>
 </mapper>

@@ -41,4 +41,15 @@
 	<delete id="deleteColumn" parameterType="map">
 		delete from docs_column_tbl where wrapperNo = #{wrapperNo} and columnIndex = #{columnIndex}
 	</delete>
+	<insert id="uploadHistory" parameterType="map">
+		insert into docs_history_tbl (projectNo, userId, fileName, action, columnIndex, columnName)
+							  values (#{projectNo}, #{userId}, #{fileName}, 1, #{columnIndex}, #{columnName})
+	</insert>
+	<insert id="deleteHistory" parameterType="map">
+		insert into docs_history_tbl (projectNo, userId, fileName, action, columnIndex, columnName)
+							  values (#{projectNo}, #{userId}, #{fileName}, 2, #{columnIndex}, #{columnName})
+	</insert>
+	<select id="getDocsHistory" resultType="org.codesync.domain.DocsHistoryVO">
+		select * from docs_history_tbl where projectNo = #{projectNo} and columnIndex = #{columnIndex} order by updateDate DESC
+	</select>
 </mapper>

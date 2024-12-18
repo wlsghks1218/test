@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.codesync.domain.DocsColumnVO;
+import org.codesync.domain.DocsHistoryVO;
 import org.codesync.domain.DocsVO;
 import org.codesync.domain.FTPUtil;
 import org.codesync.domain.ProjectVO;
@@ -249,5 +250,25 @@ public class DocsController {
     	params.put("columnIndex", columnIndex);
     	int result = service.deleteColumn(params);
     	return result;
+    }
+    
+    @PostMapping("/uploadHIstory")
+    public int uploadHIstory(@RequestBody Map<String, Object> params) {
+        int result = service.uploadHistory(params);
+        return result;
+    }
+    
+    @PostMapping("/deleteHistory")
+    public int deleteHistory(@RequestBody Map<String, Object> params) {
+        int result = service.deleteHistory(params);
+        return result;
+    }
+    
+    @GetMapping("/getDocsHistory")
+    public List<DocsHistoryVO> getDocsHistory(@RequestParam("projectNo") int projectNo, @RequestParam("columnIndex") int columnIndex) {
+    	Map<String, Integer> params = new HashMap<>();
+    	params.put("projectNo", projectNo);
+    	params.put("columnIndex", columnIndex);
+    	return service.getDocsHistory(params); 
     }
 }

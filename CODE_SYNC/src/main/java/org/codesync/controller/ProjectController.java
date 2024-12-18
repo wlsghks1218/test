@@ -221,4 +221,22 @@ public class ProjectController {
 	    	response.sendRedirect("http://localhost:3000/");
         }
     }
+    
+    @PostMapping("/removeUser")
+    public int removeUser(@RequestBody Map<String, Integer> params) {
+    	int result = service.removeUser(params);
+    	return result;
+    }
+    
+    @PostMapping("/cancelInvitation")
+    public int cancelInvitation(@RequestBody Map<String, Integer> params) {
+    	int result = service.cancelInvitation(params);
+    	return result;
+    }
+    
+    @GetMapping("/getProjectByProjectNo")
+    public ProjectVO getProjectByProjectNo(@RequestParam("projectNo") int projectNo) {
+    	ProjectVO vo = service.getProjectByProjectNo(projectNo);
+    	return vo;
+    }
 }

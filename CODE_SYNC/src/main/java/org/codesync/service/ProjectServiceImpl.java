@@ -166,4 +166,20 @@ public class ProjectServiceImpl implements ProjectService{
 	public int chkProjectExist(String projectToken) {
 		return mapper.chkProjectExist(projectToken);
 	}
+	
+	@Override
+	public int removeUser(Map<String, Integer> params) {
+		return mapper.removeUser(params);
+	}
+	
+	@Override
+	public int cancelInvitation(Map<String, Integer> params) {
+		return mapper.cancelInvitation(params);
+	}
+	
+	@Override
+	public ProjectVO getProjectByProjectNo(int projectNo) {
+		return mapper.getProjectByProjectNo(projectNo);
+	}
+	
 }

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.codesync.domain.DocsColumnVO;
+import org.codesync.domain.DocsHistoryVO;
 import org.codesync.domain.DocsVO;
 import org.codesync.domain.ProjectVO;
 import org.codesync.mapper.DocsMapper;
@@ -79,6 +80,21 @@ public class DocsServiceImpl implements DocsService{
 	@Override
 	public int deleteColumn(Map<String, Integer> params) {
 		return mapper.deleteColumn(params);
+	}
+	
+	@Override
+	public int uploadHistory(Map<String, Object> params) {
+		return mapper.uploadHistory(params);
+	}
+	
+	@Override
+	public int deleteHistory(Map<String, Object> params) {
+		return mapper.deleteHistory(params);
+	}
+	
+	@Override
+	public List<DocsHistoryVO> getDocsHistory(Map<String, Integer> params) {
+		return mapper.getDocsHistory(params);
 	}
 	
 }
