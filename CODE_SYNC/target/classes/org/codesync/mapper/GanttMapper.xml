@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.codesync.mapper.GanttMapper">
+	<insert id="createGantt" parameterType="org.codesync.domain.GanttVO">
+		insert into gantt_tbl (projectNo, startDate, endDate, userId, content)
+						values(#{projectNo}, #{startDate}, #{endDate}, #{userId}, #{content})
+	</insert>
+	<select id="getGanttDataByProjectNo" resultType="org.codesync.domain.GanttVO">
+		select * from gantt_tbl where projectNo = #{projectNo}
+	</select>
+	<delete id="deleteGantt">
+		delete from gantt_tbl where ganttNo = #{ganttNo}
+	</delete>
+	<update id="updateGantt" parameterType="org.codesync.domain.GanttVO">
+		update gantt_tbl set startDate = #{startDate}, endDate = #{endDate}, content = #{content}, userId = #{userId} where projectNo = #{projectNo} and ganttNo = #{ganttNo}
+	</update>
+</mapper>

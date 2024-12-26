@@ -97,4 +97,8 @@ public class DocsServiceImpl implements DocsService{
 		return mapper.getDocsHistory(params);
 	}
 	
+	@Override
+	public List<DocsHistoryVO> getDocsHistoryForGantt(int projectNo) {
+		return mapper.getDocsHistoryForGantt(projectNo);
+	}
 }

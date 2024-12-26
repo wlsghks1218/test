@@ -14,6 +14,7 @@ import javax.servlet.http.HttpSession;
 import org.codesync.domain.CodeSyncVO;
 import org.codesync.domain.DocsWrapperVO;
 import org.codesync.domain.ErdVO;
+import org.codesync.domain.GanttVO;
 import org.codesync.domain.ProjectVO;
 import org.codesync.domain.UserDTO;
 import org.codesync.security.domain.CustomUser;
@@ -129,6 +130,7 @@ public class ProjectController {
     
     @GetMapping("/acceptInvite")
     public void acceptInvite(@RequestParam("token") String token, HttpServletResponse response) throws IOException {
+    	
         log.warn("acceptInvite token : " + token);
         String reason = service.acceptProjectInvite(token);
 
@@ -164,6 +166,12 @@ public class ProjectController {
     @GetMapping("/checkDocs")
     public DocsWrapperVO checkDocs(@RequestParam("projectNo") int projectNo) {
     	DocsWrapperVO vo = service.getProjectDocs(projectNo);
+    	return vo;
+    }
+    
+    @GetMapping("/checkGantt")
+    public GanttVO checkGantt(@RequestParam("projectNo") int projectNo) {
+    	GanttVO vo = service.getProjectGantt(projectNo);
     	return vo;
     }
     

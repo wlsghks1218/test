@@ -6,6 +6,7 @@ import java.util.Map;
 import org.codesync.domain.CodeSyncVO;
 import org.codesync.domain.DocsWrapperVO;
 import org.codesync.domain.ErdVO;
+import org.codesync.domain.GanttVO;
 import org.codesync.domain.ProjectInviteVO;
 import org.codesync.domain.ProjectUserVO;
 import org.codesync.domain.ProjectVO;
@@ -28,6 +29,7 @@ public interface ProjectMapper {
 	public ErdVO getProjectErd(int projectNo);
 	public CodeSyncVO getProjectCode(int projectNo);
 	public DocsWrapperVO getProjectDocs(int projectNo);
+	public GanttVO getProjectGantt(int projectNo);
 	public int createErdSync(int projectNo);
 	public int createCodeSync(int projectNo);
 	public int createDocsWrapper(int projectNo);

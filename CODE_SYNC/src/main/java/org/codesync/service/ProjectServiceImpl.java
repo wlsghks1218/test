@@ -10,6 +10,7 @@ import java.util.UUID;
 import org.codesync.domain.CodeSyncVO;
 import org.codesync.domain.DocsWrapperVO;
 import org.codesync.domain.ErdVO;
+import org.codesync.domain.GanttVO;
 import org.codesync.domain.ProjectInviteVO;
 import org.codesync.domain.ProjectUserVO;
 import org.codesync.domain.ProjectVO;
@@ -120,6 +121,11 @@ public class ProjectServiceImpl implements ProjectService{
 	@Override
 	public DocsWrapperVO getProjectDocs(int projectNo) {
 		return mapper.getProjectDocs(projectNo);
+	}
+	
+	@Override
+	public GanttVO getProjectGantt(int projectNo) {
+		return mapper.getProjectGantt(projectNo);
 	}
 	
 	@Override

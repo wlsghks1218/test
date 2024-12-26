@@ -7,6 +7,7 @@ import org.codesync.domain.DocsColumnVO;
 import org.codesync.domain.DocsHistoryVO;
 import org.codesync.domain.DocsVO;
 import org.codesync.domain.ProjectVO;
+import org.springframework.web.bind.annotation.RequestParam;
 
 public interface DocsService {
 	public ProjectVO getProjectNoByWrapperNo(int wrapperNo);
@@ -22,4 +23,5 @@ public interface DocsService {
 	public int uploadHistory(Map<String, Object> params);
 	public int deleteHistory(Map<String, Object> params);
 	public List<DocsHistoryVO> getDocsHistory(Map<String, Integer> params);
+	public List<DocsHistoryVO> getDocsHistoryForGantt(int projectNo);
 }

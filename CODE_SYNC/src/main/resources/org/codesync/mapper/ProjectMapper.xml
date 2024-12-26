@@ -63,6 +63,9 @@
 	<select id="getProjectDocs" resultType="org.codesync.domain.DocsWrapperVO">
 		select * from docs_wrapper_tbl where projectNo = #{projectNo}
 	</select>
+	<select id="getProjectGantt" resultType="org.codesync.domain.GanttVO">
+		select * from gantt_tbl where projectNo = #{projectNo}
+	</select>
 	<delete id="deleteProject">
 		delete from project_tbl where projectNo = #{projectNo}
 	</delete>
