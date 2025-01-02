@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.codesync.mapper.DocsMapper">
+	<select id="getProjectNoByWrapperNo" resultType="int">
+		select projectNo from docs_wrapper_tbl where wrapperNo = #{wrapperNo}
+	</select>
+	<select id="getProjectByProjectNo" resultType="org.codesync.domain.ProjectVO">
+		select * from project_tbl where projectNo = #{projectNo}
+	</select>
+	<select id="getColumns" resultType="org.codesync.domain.DocsColumnVO">
+		select * from docs_column_tbl where wrapperNo = #{wrapperNo}
+	</select>
+	<insert id="saveColumn" useGeneratedKeys="true" keyProperty="columnNo">
+		insert into docs_column_tbl (wrapperNo, columnIndex, columnName, columnCreator)
+							  values(#{wrapperNo}, #{columnIndex}, #{columnName}, #{columnCreator})
+	</insert>
+	<insert id="insertFile">
+		insert into docs_tbl (columnNo, docsType, docsName, uploadPath, uploadUserNo)
+					   values(#{columnNo}, #{docsType}, #{docsName}, #{uploadPath}, #{uploadUserNo})
+	</insert>
+	<select id="fileExist" resultType="int">
+		select count(*) from docs_tbl where uploadPath = #{uploadPath}
+	</select>
+	<update id="updateFile">
+		update docs_tbl set uploadTime = CURRENT_TIMESTAMP, docsType = #{docsType}, docsName=#{docsName}, uploadUserNo = #{uploadUserNo} where uploadPath = #{uploadPath}
+	</update>
+	<select id="getFiles" resultType="org.codesync.domain.DocsVO">
+		select * from docs_tbl where columnNo = #{columNo}
+	</select>
+	<select id="checkColumnExist" resultType="int">
+		select count(*) from docs_column_tbl where columnIndex = #{columnIndex} and wrapperNo = #{wrapperNo}
+	</select>
+	<update id="updateColumn">
+		update docs_column_tbl set columnName = #{columnName}, columnCreator = #{columnCreator} where wrapperNo=#{wrapperNo} and columnIndex = #{columnIndex}
+	</update>
+	<delete id="deleteFile">
+		delete from docs_tbl where uploadPath = #{uploadPath}
+	</delete>
+	<delete id="deleteColumn" parameterType="map">
+		delete from docs_column_tbl where wrapperNo = #{wrapperNo} and columnIndex = #{columnIndex}
+	</delete>
+	<insert id="uploadHistory" parameterType="map">
+		insert into docs_history_tbl (projectNo, userId, fileName, action, columnIndex, columnName)
+							  values (#{projectNo}, #{userId}, #{fileName}, 1, #{columnIndex}, #{columnName})
+	</insert>
+	<insert id="deleteHistory" parameterType="map">
+		insert into docs_history_tbl (projectNo, userId, fileName, action, columnIndex, columnName)
+							  values (#{projectNo}, #{userId}, #{fileName}, 2, #{columnIndex}, #{columnName})
+	</insert>
+	<select id="getDocsHistory" resultType="org.codesync.domain.DocsHistoryVO">
+		select * from docs_history_tbl where projectNo = #{projectNo} and columnIndex = #{columnIndex} order by updateDate DESC
+	</select>
+</mapper>

@@ -94,4 +94,7 @@
 	<delete id="cancelInvitation" parameterType="map">
 		delete from project_invite_tbl where projectNo = #{projectNo} and userNo = #{userNo}
 	</delete>
+	<update id="updateProject" parameterType="org.codesync.domain.ProjectVO">
+		update project_tbl set projectName = #{projectName}, projectDisclosure = #{projectDisclosure}, projectDesc = #{projectDesc}, token = #{token} where projectNo = #{projectNo}
+	</update>
 </mapper>

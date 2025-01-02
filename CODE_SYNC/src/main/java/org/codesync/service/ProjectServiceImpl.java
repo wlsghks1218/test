@@ -188,4 +188,14 @@ public class ProjectServiceImpl implements ProjectService{
 		return mapper.getProjectByProjectNo(projectNo);
 	}
 	
+	@Override
+	public int updateProject(ProjectVO vo) {
+		if(vo.getProjectDisclosure().equals("public")) {
+			String token = UUID.randomUUID().toString();
+			vo.setToken(token);
+		}else {
+			vo.setToken(null);
+		}
+		return mapper.updateProject(vo);
+	}
 }

@@ -27,11 +27,14 @@ public class FTPUtil {
 
     public boolean uploadFile(String remotePath, File localFile) {
         FTPClient ftpClient = new FTPClient();
+        ftpClient.setControlEncoding("UTF-8");
         try (FileInputStream inputStream = new FileInputStream(localFile)) {
             ftpClient.connect(server, port);
             ftpClient.login(user, password);
             ftpClient.enterLocalPassiveMode();
             ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
+            
+            log.warn("로컬 파일 이름: " + localFile.getName());
 
             if (fileExists(remotePath)) {
                 ftpClient.deleteFile(remotePath);
@@ -106,6 +109,7 @@ public class FTPUtil {
     
     public boolean deleteFile(String remotePath) {
         FTPClient ftpClient = new FTPClient();
+        ftpClient.setControlEncoding("UTF-8");
         try {
             ftpClient.connect(server, port);
             ftpClient.login(user, password);
@@ -163,4 +167,3 @@ public class FTPUtil {
 
 
 }
-

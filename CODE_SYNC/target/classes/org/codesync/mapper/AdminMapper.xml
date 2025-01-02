@@ -3,4 +3,28 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="org.codesync.mapper.AdminMapper">
+	<select id="getProjectList" resultType="org.codesync.domain.ProjectVO">
+		select * from project_tbl
+	</select>
+	<select id="getUserList" resultType="org.codesync.domain.UserDTO">
+		select * from user_tbl
+	</select>
+	<select id="getProjectDetail" resultType="org.codesync.domain.ProjectVO">
+		select * from project_tbl where projectNo = #{projectNo}
+	</select>
+	<select id="getUserDetail" resultType="org.codesync.domain.UserDTO">
+		select * from user_tbl where userNo = #{userNo}
+	</select>
+	<update id="updateProject" parameterType="org.codesync.domain.ProjectVO">
+		update project_tbl set projectName = #{projectName}, projectDisclosure = #{projectDisclosure}, projectDesc = #{projectDesc}, token=#{token} where projectNo = #{projectNo}
+	</update>
+	<delete id="deleteProject">
+		delete from project_tbl where projectNo = #{projectNo} 
+	</delete>
+	<update id="updateUser" parameterType="org.codesync.domain.UserDTO">
+		update user_tbl set userId = #{userId}, userEmail = #{userEmail}, authAdmin = #{authAdmin} where userNo = #{userNo}
+	</update>
+	<delete id="deleteUser">
+		delete from user_tbl where userNo = #{userNo}
+	</delete>
 </mapper>

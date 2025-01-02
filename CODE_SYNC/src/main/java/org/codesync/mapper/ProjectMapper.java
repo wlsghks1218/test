@@ -42,4 +42,5 @@ public interface ProjectMapper {
 	public int chkProjectExist(String projectToken);
 	public int removeUser(Map<String, Integer> params);
 	public int cancelInvitation(Map<String, Integer> params);
+	public int updateProject(ProjectVO vo);
 }

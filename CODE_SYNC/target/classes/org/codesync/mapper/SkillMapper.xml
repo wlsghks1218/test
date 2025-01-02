@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.codesync.mapper.SkillMapper">
+	<select id="getSkillList" resultType="org.codesync.domain.SkillVO">
+		select * from skill_tbl where projectNo = #{projectNo}
+	</select>
+	<insert id="insertSkill" parameterType="org.codesync.domain.SkillVO">
+		insert into skill_tbl (projectNo, skillName, category, imageUrl) values(#{projectNo}, #{skillName}, #{category}, #{imageUrl})
+	</insert>
+	<update id="updateCategory" parameterType="org.codesync.domain.SkillVO">
+		update skill_tbl set category = #{category} where projectNo = #{projectNo} and skillName = #{skillName}
+	</update>
+	<delete id="deleteSkill" parameterType="org.codesync.domain.SkillVO">
+		delete from skill_tbl where skillName = #{skillName} and projectNo = #{projectNo}
+	</delete>
+</mapper>

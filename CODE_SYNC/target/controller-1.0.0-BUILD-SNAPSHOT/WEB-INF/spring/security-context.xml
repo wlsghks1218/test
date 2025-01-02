@@ -64,8 +64,6 @@
             login-page="/member/login"
             authentication-success-handler-ref="customLoginSuccess"
 			authentication-failure-url="/member/login?error=true"/>
-        <!-- 로그아웃 설정 -->
-        <security:logout logout-url="/Logout" invalidate-session="true" delete-cookies="remember-me"/>
 
         <!-- 접근 거부 핸들러 -->
         <security:access-denied-handler ref="customAccessDenied"/>

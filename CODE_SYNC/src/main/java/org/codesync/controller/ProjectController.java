@@ -41,7 +41,7 @@ import lombok.extern.log4j.Log4j;
 
 @RestController
 @Log4j
-@RequestMapping("/project/*")
+@RequestMapping("/project")
 @CrossOrigin(origins = "*")
 public class ProjectController {
 	
@@ -246,5 +246,11 @@ public class ProjectController {
     public ProjectVO getProjectByProjectNo(@RequestParam("projectNo") int projectNo) {
     	ProjectVO vo = service.getProjectByProjectNo(projectNo);
     	return vo;
+    }
+    
+    @PostMapping("/updateProject")
+    public int updateProject(@RequestBody ProjectVO vo) {
+    	int result = service.updateProject(vo);
+    	return result;
     }
 }

@@ -2,7 +2,7 @@ package org.codesync.controller;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,7 +19,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,7 +29,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import io.opencensus.resource.Resource;
 import lombok.extern.log4j.Log4j;
 
 @RestController
@@ -66,19 +64,28 @@ public class DocsController {
     }
     
     @PostMapping("/upload")
-    public String uploadFile(@RequestParam("file") MultipartFile file, @RequestParam("uploadUserNo") int uploadUserNo, @RequestParam("columnNo") int columnNo, @RequestParam("wrapperNo") int wrapperNo) {
+    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file,
+                                             @RequestParam("uploadUserNo") int uploadUserNo,
+                                             @RequestParam("columnNo") int columnNo,
+                                             @RequestParam("wrapperNo") int wrapperNo) {
         log.warn("업로드 요청 유저 번호: " + uploadUserNo);
         log.warn("업로드 요청 컬럼 번호: " + columnNo);
         log.warn("업로드 요청 래퍼 번호: " + wrapperNo);
 
         if (file.isEmpty()) {
-            return "파일이 선택되지 않았습니다.";
+            return ResponseEntity.badRequest().body("파일이 선택되지 않았습니다.");
         }
+        log.warn(file.getOriginalFilename());
 
         String folderPath = FTP_UPLOAD_PATH + "/" + wrapperNo + "/" + columnNo;
         String uploadPath = folderPath + "/" + file.getOriginalFilename();
+        
+        String originalFilename = file.getOriginalFilename();
+        if (originalFilename != null) {
+            originalFilename = new String(originalFilename.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
+        }
 
-        File tempFile = new File(TEMP_DIR, file.getOriginalFilename());
+        File tempFile = new File(TEMP_DIR, originalFilename);
         try {
             file.transferTo(tempFile);
 
@@ -86,46 +93,50 @@ public class DocsController {
             ftpUtil.createDirectory(folderPath);
 
             boolean isUploaded = ftpUtil.uploadFile(uploadPath, tempFile);
-            if (isUploaded) {
-                log.info("FTP 업로드 성공: " + uploadPath);
-
-                DocsVO vo = new DocsVO();
-                vo.setUploadPath(uploadPath);
-                vo.setDocsType(file.getOriginalFilename()
-                        .substring(file.getOriginalFilename().lastIndexOf(".") + 1));
-                vo.setDocsName(file.getOriginalFilename());
-                vo.setColumnNo(columnNo);
-                vo.setUploadUserNo(uploadUserNo);
-
-                int existCount = service.fileExist(uploadPath);
-                if (existCount == 0) {
-                    int result = service.insertFile(vo);
-                    if (result > 0) {
-                        log.info("DB에 파일 정보 저장 성공");
-                    } else {
-                        log.warn("DB에 파일 정보 저장 실패");
-                    }
-                } else if (existCount > 0) {
-                    int result = service.updateFile(vo);
-                    if (result > 0) {
-                        log.info("DB에 파일 정보 업데이트 성공");
-                    } else {
-                        log.warn("DB에 파일 정보 업데이트 실패");
-                    }
-                }
-            } else {
+            if (!isUploaded) {
                 log.warn("FTP 업로드 실패: " + uploadPath);
-                return "FTP 업로드 실패";
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("FTP 업로드 실패");
             }
 
-            return "파일 업로드 성공";
+            log.warn("FTP 업로드 성공: " + uploadPath);
+
+            DocsVO vo = new DocsVO();
+            vo.setUploadPath(uploadPath);
+            vo.setDocsType(file.getOriginalFilename()
+                    .substring(file.getOriginalFilename().lastIndexOf(".") + 1));
+            vo.setDocsName(file.getOriginalFilename());
+            vo.setColumnNo(columnNo);
+            vo.setUploadUserNo(uploadUserNo);
+
+            int existCount = service.fileExist(uploadPath);
+            if (existCount == 0) {
+                int result = service.insertFile(vo);
+                if (result > 0) {
+                    log.warn("DB에 파일 정보 저장 성공");
+                    return ResponseEntity.ok().header(HttpHeaders.CONTENT_TYPE, "text/plain; charset=UTF-8")
+                            .body("파일 업로드 성공: DB에 새로 저장됨");
+                } else {
+                    log.warn("DB에 파일 정보 저장 실패");
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("DB에 파일 정보 저장 실패");
+                }
+            } else {
+                int result = service.updateFile(vo);
+                if (result > 0) {
+                    log.warn("DB에 파일 정보 업데이트 성공");
+                    return ResponseEntity.ok("파일 업로드 성공: 기존 파일 정보 업데이트됨");
+                } else {
+                    log.warn("DB에 파일 정보 업데이트 실패");
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("DB에 파일 정보 업데이트 실패");
+                }
+            }
         } catch (IOException e) {
             log.error("파일 처리 중 오류 발생", e);
-            return "파일 처리 중 오류 발생: " + e.getMessage();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("파일 처리 중 오류 발생: " + e.getMessage());
         } finally {
             tempFile.delete();
         }
     }
+
     
     @GetMapping("/checkFileExists")
     public boolean checkFileExists(
