@@ -198,4 +198,9 @@ public class ProjectServiceImpl implements ProjectService{
 		}
 		return mapper.updateProject(vo);
 	}
+	
+	@Override
+	public int updatePortfolio(Map<String, Object> params) {
+		return mapper.updatePortfolio(params);
+	}
 }

@@ -46,50 +46,131 @@
 	<update id="updateTablePosition"
 		parameterType="org.codesync.domain.TableVO">
 		update erd_table_tbl
-		set xaxis = #{xaxis}, yaxis = #{yaxis} 
+		set xaxis = #{xaxis}, yaxis =
+		#{yaxis}
 		where erdNo = #{erdNo} and id = #{id}
 	</update>
-	
-	<insert id="createMemo" parameterType="org.codesync.domain.MemoVO">
-		insert into erd_memo_tbl (erdNo, content, xaxis, yaxis, id)
+
+	<insert id="createMemo"
+		parameterType="org.codesync.domain.MemoVO">
+		insert into erd_memo_tbl (erdNo, content, xaxis, yaxis,
+		id)
 		values (#{erdNo}, #{content}, #{xaxis}, #{yaxis}, #{id})
 	</insert>
-	
+
 	<select id="getMemos" resultType="org.codesync.domain.MemoVO">
 		select * from erd_memo_tbl
 		where erdNo = #{erdNo}
 	</select>
-	
+
 	<delete id="deleteMemo">
 		delete from erd_memo_tbl where erdNo = #{erdNo} and
 		id = #{id}
 	</delete>
-	
-	<update id="updateMemo" parameterType="org.codesync.domain.MemoVO">
+
+	<update id="updateMemo"
+		parameterType="org.codesync.domain.MemoVO">
 		update erd_memo_tbl
 		set content = #{content}
-		where erdNo = #{erdNo} and id = #{id}
-	</update> 
-	
+		where erdNo =
+		#{erdNo} and id = #{id}
+	</update>
+
 	<update id="updateMemoPosition"
 		parameterType="org.codesync.domain.MemoVO">
 		update erd_memo_tbl
-		set xaxis = #{xaxis}, yaxis = #{yaxis} 
+		set xaxis = #{xaxis}, yaxis =
+		#{yaxis}
 		where erdNo = #{erdNo} and id = #{id}
 	</update>
-	
-	<insert id="createArrow" parameterType="org.codesync.domain.ArrowVO">
-		insert into erd_arrow_tbl (erdNo, startXaxis, startYaxis, endXaxis, endYaxis, startId, endId)
-		values (#{erdNo}, #{startXaxis}, #{startYaxis}, #{endXaxis}, #{endYaxis}, #{startId}, #{endId})
+
+	<insert id="createArrow"
+		parameterType="org.codesync.domain.ArrowVO">
+		insert into erd_arrow_tbl (erdNo, startXaxis,
+		startYaxis, endXaxis, endYaxis, startId, endId, relativeStartX,
+		relativeStartY, relativeEndX, relativeEndY)
+		values (#{erdNo},
+		#{startXaxis}, #{startYaxis}, #{endXaxis}, #{endYaxis}, #{startId},
+		#{endId}, #{relativeStartX}, #{relativeStartY}, #{relativeEndX},
+		#{relativeEndY})
 	</insert>
-	
+
 	<select id="getArrows" resultType="org.codesync.domain.ArrowVO">
 		select * from erd_arrow_tbl
 		where erdNo = #{erdNo}
 	</select>
-	
+
 	<delete id="deleteArrow">
 		delete from erd_arrow_tbl where erdNo = #{erdNo} and
 		startId = #{startId} and endId = #{endId}
 	</delete>
+
+	<update id="updateTableName"
+		parameterType="org.codesync.domain.TableVO">
+		update erd_table_tbl set tableName = #{tableName} where
+		erdNo = #{erdNo} and
+		id = #{id}
+	</update>
+
+	<insert id="insertFields"
+		parameterType="org.codesync.domain.TableFieldsVO">
+		insert into erd_table_column_tbl (isPrimary, field,
+		domain, type, userNo, id, fieldId)
+		values (#{isPrimary}, #{field},
+		#{domain}, #{type}, #{userNo}, #{id}, #{fieldId})
+	</insert>
+
+	<select id="getTableFields"
+		resultType="org.codesync.domain.TableFieldsVO">
+		select * from erd_table_column_tbl where id = #{id}
+	</select>
+
+	<delete id="deleteAllFields">
+		DELETE FROM erd_table_column_tbl WHERE id = #{id}
+	</delete>
+
+	<delete id="deleteField">
+		DELETE FROM erd_table_column_tbl WHERE fieldId =
+		#{fieldId} and id = #{id}
+	</delete>
+
+	<update id="updateFields"
+		parameterType="org.codesync.domain.TableFieldsVO">
+		UPDATE erd_table_column_tbl
+		SET field = #{field},
+		domain =
+		#{domain},
+		type = #{type}
+		WHERE fieldId = #{fieldId} AND id = #{id}
+	</update>
+
+	<delete id="deletePrimary">
+		DELETE FROM erd_table_column_tbl WHERE fieldId =
+		#{fieldId}
+	</delete>
+
+	<update id="updateArrow"
+		parameterType="org.codesync.domain.ArrowVO">
+		UPDATE erd_arrow_tbl
+		SET
+		startXaxis = #{startXaxis},
+		startYaxis = #{startYaxis},
+		relativeStartX = #{relativeStartX},
+		relativeStartY = #{relativeStartY},
+		endXaxis = #{endXaxis},
+		endYaxis = #{endYaxis},
+		relativeEndX = #{relativeEndX},
+		relativeEndY = #{relativeEndY}
+		WHERE startId = #{startId} AND endId = #{endId};
+	</update>
+	
+	<insert id="addHistory" parameterType="org.codesync.domain.ErdHistoryVO">
+		insert into erd_history_tbl (action, erdUpdateDate)
+		values (#{action}, #{erdUpdateDate})
+	</insert>
+	
+	<select id="getHistories" resultType="org.codesync.domain.ErdHistoryVO">
+		select * from erd_history_tbl;
+	</select>
+
 </mapper>

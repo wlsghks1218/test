@@ -52,7 +52,4 @@
 	<select id="getDocsHistory" resultType="org.codesync.domain.DocsHistoryVO">
 		select * from docs_history_tbl where projectNo = #{projectNo} and columnIndex = #{columnIndex} order by updateDate DESC
 	</select>
-	<select id="getDocsHistoryForGantt" resultType="org.codesync.domain.DocsHistoryVO">
-		select * from docs_history_tbl where projectNo = #{projectNo}
-	</select>
 </mapper>

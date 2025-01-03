@@ -8,35 +8,59 @@ import org.codesync.domain.FolderVO;
 
 public interface CodeSyncService {
 
-	String saveFolderData(FolderVO folder);
+	public String saveFolderData(FolderVO folder);
 
-	void updateFolderParentId(int folderNo, Integer parentFolderId);
+	public void updateFolderParentId(int folderNo, Integer parentFolderId);
 
-	Integer findParentFolderFileNo(String filePath, int codeSyncNo);
+	public Integer findParentFolderFileNo(String filePath, int codeSyncNo);
 
-	Integer getFileNo(String folderPath, int codeSyncNo);
+	public Integer getFileNo(String folderPath, int codeSyncNo);
 
-	int getFolderNo(String filePath, int codeSyncNo);
+	public int getFolderNo(String filePath, int codeSyncNo);
 
-	void saveFile(FileVO file);
+	public void saveFile(FileVO file);
 
-	FolderStructureVO getFolderStructureByCodeSyncNo(int codeSyncNo);
+	public FolderStructureVO getFolderStructureByCodeSyncNo(int codeSyncNo);
 
-	Integer getFileNoByFolderAndFileName(int folderNo, String fileName);
+	public Integer getFileNoByFolderAndFileName(int folderNo, String fileName);
 
-	boolean checkFileLock(FileVO file);
+	public boolean checkFileLock(FileVO file);
 
-	void lockFile(FileVO file);
+	public void lockFile(FileVO file);
 
-	void unlockFile(FileVO previouslyLockedFile);
+	public void unlockFile(FileVO previouslyLockedFile);
 
-	FileVO getLockedFileByUser(int lockedBy);
+	public FileVO getLockedFileByUser(int lockedBy);
 
+	public boolean saveCode(int fileNo, String content);
 
+	public int getLockedFile(int fileNo, int userNo);
 
+	public boolean isFileLockedByAnotherUser(int fileNo, int lockedBy);
 
+	public boolean checkFileLockStatus(int fileNo, int userNo);
 
+	public List<Integer> getFolderNosByCodeSyncNo(int codeSyncNo);
 
+	public List<Integer> getFileNosByFolderNo(Integer folderNo);
+
+	public boolean deleteFoldersAndFiles(List<Integer> folderNos, List<Integer> fileNosToDelete);
+
+	public void changeFolderName(String newName, String folderName, int codeSyncNo);
+
+	public void changeFileName(String newName, String fileName, int folderNo);
+
+	public void deleteFolder(int folderNo);
+
+	public void createFile(FileVO file);
+
+	public void createFolder(FileVO file);
+
+	public void pastefolder(FileVO file);
+
+	public void pasteFile(FileVO file);
+
+	public void deleteFile(FileVO file);
 
 
 }

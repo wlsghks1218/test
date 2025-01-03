@@ -97,4 +97,7 @@
 	<update id="updateProject" parameterType="org.codesync.domain.ProjectVO">
 		update project_tbl set projectName = #{projectName}, projectDisclosure = #{projectDisclosure}, projectDesc = #{projectDesc}, token = #{token} where projectNo = #{projectNo}
 	</update>
+	<update id="updatePortfolio" parameterType="map">
+		update project_tbl set portfolioLink = #{portfolioLink} where projectNo = #{projectNo}
+	</update>
 </mapper>

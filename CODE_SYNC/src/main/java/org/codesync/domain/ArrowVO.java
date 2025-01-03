@@ -19,5 +19,9 @@ public class ArrowVO {
     private String endYaxis; // 필드명 그대로 사용
     private String startId;
     private String endId;
+    private String relativeStartX;
+    private String relativeStartY;
+    private String relativeEndX;
+    private String relativeEndY;
 
 }

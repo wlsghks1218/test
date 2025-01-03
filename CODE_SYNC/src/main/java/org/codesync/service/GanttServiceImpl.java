@@ -2,6 +2,7 @@ package org.codesync.service;
 
 import java.util.List;
 
+import org.codesync.domain.DocsHistoryVO;
 import org.codesync.domain.GanttVO;
 import org.codesync.mapper.GanttMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,5 +35,10 @@ public class GanttServiceImpl implements GanttService{
 	@Override
 	public int updateGantt(GanttVO vo) {
 		return mapper.updateGantt(vo);
+	}
+	
+	@Override
+	public List<DocsHistoryVO> getDocsHistoryForGantt(int projectNo) {
+		return mapper.getDocsHistoryForGantt(projectNo);
 	}
 }

@@ -1,6 +1,7 @@
 package org.codesync.controller;
 
 import java.nio.file.Files;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.codesync.domain.FileVO;
@@ -136,5 +137,72 @@ public class CodeSyncController {
         // folderNo와 fileName을 사용하여 fileNo 조회
         return service.getFileNoByFolderAndFileName(request.getFolderNo(), request.getFileName());
     }
+    @PostMapping("/saveCode")
+    public ResponseEntity<String> saveCode(@RequestBody FileVO request) {
+        try {
+            // fileNo와 content가 비어있는지 확인
+            if (request.getFileNo() == 0 || request.getContent() == null || request.getContent().isEmpty()) {
+                log.warn("Invalid data received for saveCode");
+                return new ResponseEntity<>("Invalid fileNo or content", HttpStatus.BAD_REQUEST);
+            }
 
+            // 파일 저장 로직 (예: 파일 내용을 DB에 저장)
+            boolean isSaved = service.saveCode(request.getFileNo(), request.getContent());
+
+            if (isSaved) {
+                return new ResponseEntity<>("Code saved successfully!", HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>("Failed to save code", HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+
+        } catch (Exception e) {
+            log.error("Error saving code", e);
+            return new ResponseEntity<>("Failed to save code", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    // 파일 잠금 상태 확인
+    @PostMapping("/checkFileLockStatus")
+    public ResponseEntity<Map<String, Object>> checkFileLockStatus(@RequestBody Map<String, Object> request) {
+        int fileNo = (int) request.get("fileNo");
+        int userNo = (int) request.get("userNo");
+        // DB에서 해당 파일의 잠금 상태 확인
+        boolean isLockedByAnotherUser = service.isFileLockedByAnotherUser(fileNo, userNo);
+
+        // 응답에 포함할 데이터
+        Map<String, Object> response = new HashMap<>();
+        response.put("isLockedByAnotherUser", isLockedByAnotherUser);
+
+        return ResponseEntity.ok(response);
+    }
+    @PostMapping("/checkLocked")
+    public ResponseEntity<Map<String, Object>> checkLocked(@RequestBody Map<String, Object> request) {
+        int fileNo = (int) request.get("fileNo");
+        int userNo = (int) request.get("userNo");
+
+        // 서비스에서 잠금 상태를 확인
+        boolean isLocked = service.checkFileLockStatus(fileNo, userNo);
+
+        // 응답 데이터 준비
+        Map<String, Object> response = new HashMap<>();
+        response.put("isLocked", isLocked);  // 잠금 상태를 true/false로 반환
+
+        return ResponseEntity.ok(response);
+    }
+    
+    @PostMapping("/checkWhoLocked")
+    public ResponseEntity<Map<String, Object>> checkWhoLocked(@RequestBody Map<String, Object> request) {
+        int fileNo = (int) request.get("fileNo");
+        int userNo = (int) request.get("userNo");
+
+        int isLockedByUser = service.getLockedFile(fileNo, userNo);
+
+        
+
+        // 응답 데이터 준비
+        Map<String, Object> response = new HashMap<>();
+        response.put("isLocked", isLockedByUser);  // 잠금 상태를 true/false로 반환
+
+        return ResponseEntity.ok(response);
+    }
+    
 }

@@ -88,5 +88,89 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         lockTime = NULL
     WHERE lockedBy = #{lockedBy}
 </update>
+<!-- 파일 내용 업데이트 -->
+<update id="updateCode" parameterType="org.codesync.domain.FileVO">
+    UPDATE CodeSync_file_tbl
+    SET content = #{content}
+    WHERE fileNo = #{fileNo}
+</update>
 
+<select id="getLockedBy" resultType="int">
+    SELECT lockedBy
+    FROM CodeSync_file_tbl
+    WHERE fileNo = #{fileNo}
+</select>
+   <!-- 파일 잠금 상태 확인 -->
+    <select id="checkFileLockStatus" resultType="int">
+        SELECT COUNT(*)
+        FROM CodeSync_file_tbl
+        WHERE fileNo = #{fileNo} AND lockedBy = #{userNo}
+    </select>
+       <select id="getFolderNosByCodeSyncNo" resultType="int">
+        SELECT folderNo
+        FROM CodeSync_folder_tbl
+        WHERE codeSyncNo = #{codeSyncNo}
+    </select>
+        <select id="getFileNosByFolderNo" resultType="int">
+        SELECT fileNo
+        FROM CodeSync_file_tbl
+        WHERE folderNo = #{folderNo}
+    </select>
+     <delete id="deleteByFolderNo">
+        DELETE FROM CodeSync_folder_tbl
+        WHERE folderNo = #{folderNo}
+    </delete>
+      <delete id="deleteByFileNo">
+        DELETE FROM CodeSync_file_tbl
+        WHERE fileNo = #{fileNo}
+    </delete>
+    <update id="changeFolderName" parameterType="org.codesync.domain.FileVO">
+    UPDATE CodeSync_folder_tbl
+    SET
+        folderName = #{newName}
+    WHERE folderName = #{folderName} AND CodeSyncNo = #{codeSyncNo}
+</update>
+  <update id="changeFileName" parameterType="org.codesync.domain.FileVO">
+    UPDATE CodeSync_file_tbl
+    SET
+        fileName = #{newName}
+    WHERE fileName  = #{fileName} AND folderNo = #{folderNo}
+</update>
+
+ <select id="getFolderChildFile" resultType="org.codesync.domain.FileVO">
+        SELECT *
+        FROM CodeSync_file_tbl
+        WHERE folderNo = #{folderNo}
+    </select>
+ <delete id="deleteFileByFolderNo" parameterType="int">
+        DELETE FROM CodeSync_file_tbl
+        WHERE folderNo = #{folderNo}
+    </delete>
+    <insert id="createFile" parameterType="org.codesync.domain.FileVO">
+     INSERT INTO CodeSync_file_tbl (folderNo, fileName, extension, content, filePath , createdBy)
+    VALUES (#{folderNo}, #{fileName}, #{extension}, "코드를 입력하시면 됩니다!" , #{filePath},#{createdBy})
+    </insert>
+      <insert id="createFolder" parameterType="org.codesync.domain.FileVO">
+     INSERT INTO CodeSync_folder_tbl (codeSyncNo, folderName, parentFolderId, folderPath , createdBy)
+    VALUES (#{codeSyncNo}, #{folderName}, #{folderNo} , #{filePath},#{createdBy})
+    </insert>
+ 
+<insert id="pasteFolder" parameterType="org.codesync.domain.FileVO" useGeneratedKeys="true" keyProperty="folderNo">
+    INSERT INTO CodeSync_folder_tbl (codeSyncNo, folderName, parentFolderId, folderPath, createdBy)
+    VALUES (#{codeSyncNo}, #{folderName}, #{newFolderNo}, #{folderPath}, #{createdBy})
+</insert>
+    <insert id="pasteFile">
+     INSERT INTO CodeSync_file_tbl (folderNo, fileName, extension, content, filePath , createdBy)
+    VALUES (#{folderNo}, #{fileName}, #{extension}, #{content} , #{filePath},#{userNo})
+    </insert>
+ <select id="getFileData" resultType="org.codesync.domain.FileVO">
+        SELECT *
+        FROM CodeSync_file_tbl
+        WHERE fileName = #{fileName} AND folderNo = #{folderNo}
+    </select>
+     <delete id="deleteFile" parameterType="org.codesync.domain.FileVO">
+        DELETE FROM CodeSync_file_tbl
+        WHERE folderNo = #{folderNo} AND fileName = #{fileName}
+    </delete>
+     
 </mapper>

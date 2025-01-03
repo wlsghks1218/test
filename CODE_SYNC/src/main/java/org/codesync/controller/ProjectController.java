@@ -1,6 +1,7 @@
 package org.codesync.controller;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -98,7 +99,7 @@ public class ProjectController {
             int result = service.inviteUser(inviteInfo);
 
             // Construct the invitation link
-            String inviteLink = "http://localhost:9090/project/acceptInvite?token=" + token;
+            String inviteLink = "http://116.121.53.142:9100/project/acceptInvite?token=" + token;
 
             // Construct the email content
             String subject = "CODE SYNC: You are invited to join the project '" + projectName + "'";
@@ -117,11 +118,12 @@ public class ProjectController {
         }
     }
 
-    private void sendInvitationEmail(String email, String subject, String content) throws MessagingException {
+    private void sendInvitationEmail(String email, String subject, String content) throws MessagingException, UnsupportedEncodingException {
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
         helper.setTo(email);
+        helper.setFrom("kimkacang@gmail.com", "CODE SYNC"); // 발송자 이메일 + 발송자 이름
         helper.setSubject(subject);
         helper.setText(content, true);
 
@@ -135,11 +137,11 @@ public class ProjectController {
         String reason = service.acceptProjectInvite(token);
 
         if ("token expired".equals(reason)) {
-            response.sendRedirect("http://localhost:3000/expiredPage");
+            response.sendRedirect("http://116.121.53.142:9100/expiredPage");
         } else if ("already joined".equals(reason)) {
-            response.sendRedirect("http://localhost:3000/alreadyJoined");
+            response.sendRedirect("http://116.121.53.142:9100/alreadyJoined");
         } else if ("join success".equals(reason)) {
-            response.sendRedirect("http://localhost:3000/");
+            response.sendRedirect("http://116.121.53.142:9100/");
         }
     }
     
@@ -189,7 +191,7 @@ public class ProjectController {
         if (authentication == null || !authentication.isAuthenticated() || authentication.getPrincipal().equals("anonymousUser")) {
         	log.warn("로그인되지 않음");
         	session.setAttribute("token", projectToken);
-        	response.sendRedirect("http://localhost:3000/login");
+        	response.sendRedirect("http://116.121.53.142:9100/login");
         	return;
         }
         
@@ -201,14 +203,14 @@ public class ProjectController {
         int result4 = service.chkProjectExist(projectToken);
         if(result4 == 0) {
         	session.removeAttribute("token");
-        	response.sendRedirect("http://localhost:3000/invalidProject");
+        	response.sendRedirect("http://116.121.53.142:9100/invalidProject");
         	return;
         }
         
         int result = mservice.getProjectCount(userNo);
         if(result >= 3) {
         	session.removeAttribute("token");
-        	response.sendRedirect("http://localhost:3000/projectLimit");
+        	response.sendRedirect("http://116.121.53.142:9100/projectLimit");
         	return;
         }
         
@@ -222,11 +224,11 @@ public class ProjectController {
         int result3 = service.chkProjectJoin(params);
         if(result3 > 0) {
         	session.removeAttribute("token");
-        	response.sendRedirect("http://localhost:3000/alreadyJoined");
+        	response.sendRedirect("http://116.121.53.142:9100/alreadyJoined");
         }else {
         	int result2 = service.joinProjectByToken(params);
         	session.removeAttribute("token");
-	    	response.sendRedirect("http://localhost:3000/");
+	    	response.sendRedirect("http://116.121.53.142:9100/");
         }
     }
     
@@ -251,6 +253,12 @@ public class ProjectController {
     @PostMapping("/updateProject")
     public int updateProject(@RequestBody ProjectVO vo) {
     	int result = service.updateProject(vo);
+    	return result;
+    }
+    
+    @PostMapping("/updatePortfolio")
+    public int updatePortfolio(@RequestBody Map<String, Object> params) {
+    	int result = service.updatePortfolio(params);
     	return result;
     }
 }

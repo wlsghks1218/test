@@ -3,6 +3,7 @@ package org.codesync.controller;
 import java.util.List;
 import java.util.Map;
 
+import org.codesync.domain.DocsHistoryVO;
 import org.codesync.domain.GanttVO;
 import org.codesync.service.GanttService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.extern.log4j.Log4j;
@@ -47,5 +49,10 @@ public class GanttController {
     public List<GanttVO> updateGantt(@RequestBody GanttVO vo) {
     	int result = service.updateGantt(vo); 
     	return service.getGanttDataByProjectNo(vo.getProjectNo());
+    }
+    
+    @GetMapping("/getDocsHistoryForGantt")
+    public List<DocsHistoryVO> getDocsHistoryForGantt(@RequestParam("projectNo") int projectNo) {
+    	return service.getDocsHistoryForGantt(projectNo); 
     }
 }

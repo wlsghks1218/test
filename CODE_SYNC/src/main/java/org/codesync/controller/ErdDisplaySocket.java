@@ -18,10 +18,12 @@ import javax.websocket.server.ServerEndpoint;
 import org.codesync.domain.ArrowVO;
 import org.codesync.domain.ChatContentVO;
 import org.codesync.domain.MemoVO;
+import org.codesync.domain.TableFieldsVO;
 import org.codesync.domain.TableVO;
 import org.codesync.service.ChatService;
 import org.codesync.service.ErdService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.ContextLoader;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -85,6 +87,7 @@ public class ErdDisplaySocket {
             TableVO tvo = gson.fromJson(msg, TableVO.class);
             MemoVO mvo = gson.fromJson(msg, MemoVO.class);
             ArrowVO avo = gson.fromJson(msg, ArrowVO.class);
+            TableFieldsVO fvo = gson.fromJson(msg, TableFieldsVO.class);
             String erdNo = tvo.getErdNo();
 
             // 테이블 생성
@@ -94,9 +97,22 @@ public class ErdDisplaySocket {
             }
             // 테이블 삭제
             if (tvo.getCode().equals("3")) {
-            	log.info("Received message for erdNo " + erdNo + ": " + tvo);
-            	eservice.deleteTable(tvo); 
+                log.info("Received message for erdNo " + erdNo + ": " + tvo);
+
+                // 트랜잭션 안에서 삭제 처리
+                try {
+                    // 모든 필드 삭제
+                    eservice.deleteAllFields(fvo); 
+
+                    // 테이블 삭제
+                    eservice.deleteTable(tvo);
+                    
+                } catch (Exception e) {
+                    log.error("Error occurred during deletion process", e);
+                }
             }
+
+
             // 테이블 위치 이동
             if (tvo.getCode().equals("4")) {
             	log.info("Received message for erdNo " + erdNo + ": " + tvo);
@@ -123,17 +139,40 @@ public class ErdDisplaySocket {
             	eservice.updateMemoPosition(mvo); 
             }
             // 화살표 생성
-            if (mvo.getCode().equals("9")) {
+            if (avo.getCode().equals("9")) {
             	log.info("Received message for erdNo " + erdNo + ": " + avo);
             	eservice.createArrow(avo); 
             }
             // 화살표 삭제
-            if (mvo.getCode().equals("10")) {
+            if (avo.getCode().equals("10")) {
             	log.info("Received message for erdNo " + erdNo + ": " + avo);
-            	eservice.deleteArrow(avo); 
-            }            
-            
-
+            	eservice.deleteArrow(avo);             	
+            }          
+            if (tvo.getCode().equals("11")) {
+                log.info("Received table update for erdNo " + erdNo + ": " + tvo);
+                eservice.updateTableName(tvo);
+            }
+            if (fvo.getCode().equals("12")) {
+            	log.warn("에프비오: " + fvo);
+            	eservice.insertFields(fvo);
+            }
+            if (fvo.getCode().equals("13")) {
+            	log.warn("에프비오: " + fvo);
+            	eservice.deleteField(fvo);
+            }
+            if (fvo.getCode().equals("14")) {
+            	log.warn("에프비오: " + fvo);
+            	eservice.updateFields(fvo);
+            }
+            if (fvo.getCode().equals("15")) {
+            	log.warn("에프비오: " + fvo);
+            	eservice.deletePrimary(fvo);
+            }
+            if (avo.getCode().equals("16")) {
+            	log.warn("에프비오: " + avo);
+            	eservice.updateArrow(avo);
+            }
+           
             // erdNo에 해당하는 모든 세션에 메시지를 전송
             List<Session> sessions = erdNoSessionMap.get(erdNo);
             if (sessions != null) {

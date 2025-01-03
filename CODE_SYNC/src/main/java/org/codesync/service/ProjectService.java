@@ -31,4 +31,5 @@ public interface ProjectService {
 	public int cancelInvitation(Map<String, Integer> params);
 	public ProjectVO getProjectByProjectNo(int projectNo);
 	public int updateProject(ProjectVO vo);
+	public int updatePortfolio(Map<String, Object> params);
 }

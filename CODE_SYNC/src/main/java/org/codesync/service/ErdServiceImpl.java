@@ -4,7 +4,9 @@ import java.util.List;
 
 import org.codesync.domain.ArrowVO;
 import org.codesync.domain.ChatContentVO;
+import org.codesync.domain.ErdHistoryVO;
 import org.codesync.domain.MemoVO;
+import org.codesync.domain.TableFieldsVO;
 import org.codesync.domain.TableVO;
 import org.codesync.mapper.ErdMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -98,6 +100,66 @@ public class ErdServiceImpl implements ErdService {
 	public int deleteArrow(ArrowVO avo) {
 		// TODO Auto-generated method stub
 		return mapper.deleteArrow(avo);
+	}
+
+	@Override
+	public int updateTableName(TableVO tvo) {
+
+		return mapper.updateTableName(tvo);
+	}
+
+	@Override
+	public int insertFields(TableFieldsVO fvo) {
+		// TODO Auto-generated method stub
+		return mapper.insertFields(fvo);
+	}
+
+	@Override
+	public List<TableFieldsVO> getTableFields(String id) {
+		// TODO Auto-generated method stub
+		return mapper.getTableFields(id);
+	}
+
+	@Override
+	public int deleteAllFields(TableFieldsVO fvo) {
+		// TODO Auto-generated method stub
+		return mapper.deleteAllFields(fvo);
+	}
+
+	@Override
+	public int deleteField(TableFieldsVO fvo) {
+		// TODO Auto-generated method stub
+		return mapper.deleteField(fvo);
+	}
+
+	@Override
+	public int updateFields(TableFieldsVO fvo) {
+		// TODO Auto-generated method stub
+		return mapper.updateFields(fvo);
+	}
+
+	@Override
+	public int deletePrimary(TableFieldsVO fvo) {
+		// TODO Auto-generated method stub
+		return mapper.deletePrimary(fvo);
+	}
+
+	@Override
+	public int updateArrow(ArrowVO avo) {
+		// TODO Auto-generated method stub
+		return mapper.updateArrow(avo);
+	}
+
+	@Override
+	public int addHistory(ErdHistoryVO history) {
+		// TODO Auto-generated method stub
+		return mapper.addHistory(history);
+	}
+
+	@Override
+	public List<ErdHistoryVO> getHistories() {
+		// TODO Auto-generated method stub
+		return mapper.getHistories();
 	}
 
 }

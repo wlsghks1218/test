@@ -4,7 +4,9 @@ import java.util.List;
 
 import org.codesync.domain.ArrowVO;
 import org.codesync.domain.ChatContentVO;
+import org.codesync.domain.ErdHistoryVO;
 import org.codesync.domain.MemoVO;
+import org.codesync.domain.TableFieldsVO;
 import org.codesync.domain.TableVO;
 
 public interface ErdService {
@@ -36,5 +38,25 @@ public interface ErdService {
 	public List<ArrowVO> getArrows(String erdNo);
 
 	public int deleteArrow(ArrowVO avo);
-	
+
+	public int updateTableName(TableVO tvo);
+
+	public int insertFields(TableFieldsVO fvo);
+
+	public List<TableFieldsVO> getTableFields(String id);
+
+	public int deleteAllFields(TableFieldsVO fvo);
+
+	public int deleteField(TableFieldsVO fvo);
+
+	public int updateFields(TableFieldsVO fvo);
+
+	public int deletePrimary(TableFieldsVO fvo);
+
+	public int updateArrow(ArrowVO avo);
+
+	public int addHistory(ErdHistoryVO history);
+
+	public List<ErdHistoryVO> getHistories();
+
 }

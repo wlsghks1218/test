@@ -24,5 +24,4 @@ public interface DocsMapper {
 	public int uploadHistory(Map<String, Object> params);
 	public int deleteHistory(Map<String, Object> params);
 	public List<DocsHistoryVO> getDocsHistory(Map<String, Integer> params);
-	public List<DocsHistoryVO> getDocsHistoryForGantt(int projectNo);
 }

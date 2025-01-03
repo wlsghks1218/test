@@ -83,24 +83,17 @@ public class CodeSyncWebsocketController {
             String responseMessage;
 
             if ("3".equals(file.getCode())) { // Lock file
-            	 // 현재 사용자가 잠근 파일 확인 및 해제
-            	FileVO previouslyLockedFile = service.getLockedFileByUser(lockedBy);
+              
+                // 사용자가 이전에 잠근 파일 확인 및 해제
+                FileVO previouslyLockedFile = service.getLockedFileByUser(lockedBy);
+                if (previouslyLockedFile != null) {
+                    service.unlockFile(previouslyLockedFile);
+                    log.info("Previous lock released for file: " + previouslyLockedFile.getFileName());
+                    broadcastLockStatus(previouslyLockedFile, String.valueOf(codeSyncNo));
+                }
 
-            	if (previouslyLockedFile != null) {
-            	    // 이전에 잠금된 파일이 있는 경우
-            	    System.out.println(previouslyLockedFile.getFileNo());
-            	    System.out.println(previouslyLockedFile);
-            	    service.unlockFile(previouslyLockedFile);
-            	    log.info("Previous lock released for file: " + previouslyLockedFile.getFileName());
-            	    broadcastLockStatus(previouslyLockedFile, String.valueOf(codeSyncNo));
-            	} else {
-            	    // 이전에 잠금된 파일이 없는 경우
-            	    log.info("No file was previously locked by user: " + lockedBy);
-            	}
-
-            
+                // 현재 파일 잠금 처리
                 boolean isLocked = service.checkFileLock(file);
-                
                 if (!isLocked) {
                     service.lockFile(file);
                     log.info("File locked: " + file.getFileName());
@@ -112,15 +105,91 @@ public class CodeSyncWebsocketController {
                 }
             } else if ("4".equals(file.getCode())) { // Unlock file
                 service.unlockFile(file);
-                log.info("File unlocked: " + file.getFileName());
                 responseMessage = createResponse("success", "File unlocked successfully: " + file.getFileName(), file);
                 broadcastLockStatus(file, String.valueOf(codeSyncNo));
-            } else {
+            } else if ("6".equals(file.getCode())) {  // 폴더 트리 전체 삭제를 위한 메서드
+                // 1. codeSyncNo로 해당하는 폴더들의 folderNo를 가져오기
+                List<Integer> folderNos = service.getFolderNosByCodeSyncNo(codeSyncNo);
+                if (folderNos.isEmpty()) {
+                    responseMessage = createResponse("error", "No folders found for codeSyncNo: " + codeSyncNo, file);
+                    sendMessage(session, responseMessage);
+                    return;
+                }
+
+                // 2. 각 folderNo로 해당하는 파일들을 가져오기
+                List<Integer> fileNosToDelete = new ArrayList<>();
+                for (Integer folderNo : folderNos) {
+                    List<Integer> fileNos = service.getFileNosByFolderNo(folderNo);
+                    fileNosToDelete.addAll(fileNos);
+                }
+
+                // 3. 폴더와 파일들 삭제 처리
+                boolean deleteSuccess = service.deleteFoldersAndFiles(folderNos, fileNosToDelete);
+                if (deleteSuccess) {
+                    responseMessage = createResponse("success", "Folders and files deleted successfully", file);
+                } else {
+                    responseMessage = createResponse("error", "Error occurred while deleting folders and files", file);
+                }
+
+                sendMessage(session, responseMessage);
+                broadcastLockStatus(file, String.valueOf(codeSyncNo));
+            }
+            else if ("7".equals(file.getCode())) { 
+            	 if (file.getFileName() == null) { 
+            	        String newName = file.getNewName();
+            	        String folderName = file.getFolderName();
+            	        
+            	        service.changeFolderName(newName,folderName,codeSyncNo);
+            	        
+            	    } else if (file.getFolderName() == null) {
+            	       String newName = file.getNewName();
+            	       String fileName = file.getFileName();
+            	       int folderNo = file.getFolderNo();
+            	       
+            	       service.changeFileName(newName,fileName,folderNo);
+            	    }
+            	 responseMessage = createResponse("success", "reNamed Success", file);
+            	 sendMessage(session, responseMessage);
+                 broadcastLockStatus(file, String.valueOf(codeSyncNo));
+            }else if ("8".equals(file.getCode())) { // Unlock file
+            
+                int folderNo = file.getFolderNo();
+                service.deleteFolder(folderNo);
+           	 responseMessage = createResponse("success", "folder Delete success", file);
+        	 sendMessage(session, responseMessage);
+             broadcastLockStatus(file, String.valueOf(codeSyncNo));
+            } else if ("9".equals(file.getCode())) { // Unlock file
+           
+               service.createFile(file);
+            	 responseMessage = createResponse("success", "file create success", file);
+            	 sendMessage(session, responseMessage);
+                 broadcastLockStatus(file, String.valueOf(codeSyncNo));
+            }else if ("10".equals(file.getCode())) { // Unlock file
+                
+                service.createFolder(file);
+             	 responseMessage = createResponse("success", "folder create success", file);
+             	 sendMessage(session, responseMessage);
+                  broadcastLockStatus(file, String.valueOf(codeSyncNo));
+             }else if ("11".equals(file.getCode())) { // Unlock file
+              
+            	 if (file.getType().equals("folder")) {
+            	    service.pastefolder(file);
+				}else if (file.getType().equals("file")) {
+					service.pasteFile(file);
+				}      
+            	 responseMessage = createResponse("success", "folder create success", file);
+              	 sendMessage(session, responseMessage);
+                   broadcastLockStatus(file, String.valueOf(codeSyncNo));
+              } else if ("12".equals(file.getCode())) { // Unlock file
+                  service.deleteFile(file);
+                  responseMessage = createResponse("success", "File delete successfully: " + file.getFileName(), file);
+                  broadcastLockStatus(file, String.valueOf(codeSyncNo));
+              } else {
                 log.warn("Invalid code received: " + file.getCode());
                 responseMessage = createResponse("error", "Invalid operation code: " + file.getCode(), file);
+                sendMessage(session, responseMessage);
             }
 
-            sendMessage(session, responseMessage);
         } catch (Exception e) {
             log.error("Message handling error", e);
             sendMessage(session, createResponse("error", "Internal server error", null));
@@ -129,11 +198,64 @@ public class CodeSyncWebsocketController {
 
     private void broadcastLockStatus(FileVO file, String codeSyncNo) {
         Map<String, Object> response = new HashMap<>();
-        response.put("status", "update");
-        response.put("message", "Lock status updated");
+     
+
+        // 기존 처리 로직 유지: file.getCode()에 따라 메시지 설정
+        if ("3".equals(file.getCode())) { // 파일 잠금
+            response.put("message", "File locked");
+        } else if ("4".equals(file.getCode())) { // 파일 잠금 해제
+            response.put("message", "File unlocked");
+        } else if ("5".equals(file.getCode())) { // 잠금 상태 확인
+            // 잠금 상태에 따라 메시지 커스터마이징
+            int lockStatus = file.getIsLockedByUser(); // file.getIsLockedByUser는 int로 변경됨
+            if (lockStatus == 1) {
+                response.put("message", "File is not locked.");
+            } else if (lockStatus == 2) {
+                response.put("message", "File is locked by the user.");
+            } else if (lockStatus == 3) {
+                response.put("message", "File is locked by another user.");
+             
+            }
+        }else if ("6".equals(file.getCode())) { // 파일 잠금 해제
+            response.put("message", "File delete");
+            response.put("status", "delete_complete");
+            
+        }else if ("7".equals(file.getCode())) { // 파일 잠금 해제
+            response.put("message", "name changed");
+            response.put("status", "change_complete");
+            
+        }else if ("8".equals(file.getCode())) { // 파일 잠금 해제
+            response.put("message", "folder Delete");
+            response.put("status", "Delete_complete");
+            
+        }else if ("9".equals(file.getCode())) { // 파일 잠금 해제
+            response.put("message", "file Create");
+            response.put("status", "Create_complete");
+            
+        }else if ("10".equals(file.getCode())) { // 파일 잠금 해제
+            response.put("message", "folder Create");
+            response.put("status", "Create_complete");
+            
+        }else if ("11".equals(file.getCode())) { // 파일 잠금 해제
+        	if (file.getType().equals("folder")) {
+        		response.put("message", "folder Paste");
+        		response.put("status", "Paste_complete");
+				
+			}else {
+				response.put("message", "file Paste");
+        		response.put("status", "Paste_complete");
+			}
+            
+        }else if ("12".equals(file.getCode())) { // 파일 잠금 해제
+            response.put("message", "file Delete");
+            response.put("status", "Delete_complete");
+            
+        }
+
         response.put("file", file);
 
         String message = gson.toJson(response);
+
         List<Session> sessions = SessionMap.get(codeSyncNo);
         if (sessions != null) {
             for (Session s : sessions) {
@@ -141,6 +263,8 @@ public class CodeSyncWebsocketController {
             }
         }
     }
+  
+
 
     private String createResponse(String status, String message, FileVO file) {
         Map<String, Object> response = new HashMap<>();

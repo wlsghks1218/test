@@ -43,4 +43,5 @@ public interface ProjectMapper {
 	public int removeUser(Map<String, Integer> params);
 	public int cancelInvitation(Map<String, Integer> params);
 	public int updateProject(ProjectVO vo);
+	public int updatePortfolio(Map<String, Object> params);
 }

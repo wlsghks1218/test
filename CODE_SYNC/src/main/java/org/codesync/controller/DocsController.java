@@ -282,9 +282,4 @@ public class DocsController {
     	params.put("columnIndex", columnIndex);
     	return service.getDocsHistory(params); 
     }
-    
-    @GetMapping("/getDocsHistoryForGantt")
-    public List<DocsHistoryVO> getDocsHistoryForGantt(@RequestParam("projectNo") int projectNo) {
-    	return service.getDocsHistoryForGantt(projectNo); 
-    }
 }

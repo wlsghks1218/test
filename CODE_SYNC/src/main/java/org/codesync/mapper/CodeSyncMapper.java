@@ -35,6 +35,54 @@ public interface CodeSyncMapper {
 
 	public void unlockFile(@Param("lockedBy") int lockedBy);
 
+	public int updateCode(FileVO file);
+
+	public Integer getLockedBy(int fileNo);
+
+	public int checkFileLockStatus(@Param("fileNo") int fileNo,@Param("userNo") int userNo);
+
+	public List<Integer> getFolderNosByCodeSyncNo(int codeSyncNo);
+
+	public List<Integer> getFileNosByFolderNo(Integer folderNo);
+
+	public void deleteByFolderNo(Integer folderNo);
+
+	public void deleteByFileNo(Integer fileNo);
+
+	public void changeFolderName(@Param("newName") String newName,@Param("folderName") String folderName,@Param("codeSyncNo") int codeSyncNo);
+
+	public void changeFileName(@Param("newName") String newName,@Param("fileName") String fileName,@Param("folderNo") int folderNo);
+
+	public List<FileVO> getFolderChildFile(int folderNo);
+
+	public void deleteFileByFolderNo(int folderNo);
+
+	public void createFile(FileVO file);
+
+	public void createFolder(FileVO file);
+
+	public void pastefolderChilderns(List<FileVO> fvo);
+
+	public void pasteFolder(FileVO file);
+
+	public void pasteFile(@Param("filePath") String filePath, 
+						  @Param("folderNo") int folderNo,
+						  @Param("fileName") String fileName, 
+						  @Param("content") String content, 
+						  @Param("extension") String extension, 
+						  @Param("userNo") int userNo);
+
+	public FileVO getFileData(FileVO file);
+
+	public void deleteFile(FileVO file);
+
+
+	
+
+
+
+	
+
 
 
 

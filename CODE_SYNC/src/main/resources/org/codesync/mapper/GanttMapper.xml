@@ -16,4 +16,7 @@
 	<update id="updateGantt" parameterType="org.codesync.domain.GanttVO">
 		update gantt_tbl set startDate = #{startDate}, endDate = #{endDate}, content = #{content}, userId = #{userId} where projectNo = #{projectNo} and ganttNo = #{ganttNo}
 	</update>
+	<select id="getDocsHistory" resultType="org.codesync.domain.DocsHistoryVO">
+		select * from docs_history_tbl where projectNo = #{projectNo} and columnIndex = #{columnIndex} order by updateDate DESC
+	</select>
 </mapper>
