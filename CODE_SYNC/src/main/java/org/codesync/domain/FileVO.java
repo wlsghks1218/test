@@ -39,6 +39,7 @@ public class FileVO {
 	private int userNo; // 웹소켓 처리를 위해 추가됨
 	private int isLockedByUser; // 웹소켓 처리를 위해 추가됨
 	private String type;// 웹소켓 처리를 위해 추가됨
+	private String userId;// 히스토리 처리를 위해 추가됨
 	
 	@Override
 	public String toString() {

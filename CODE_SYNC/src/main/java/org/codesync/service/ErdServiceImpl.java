@@ -157,9 +157,9 @@ public class ErdServiceImpl implements ErdService {
 	}
 
 	@Override
-	public List<ErdHistoryVO> getHistories() {
+	public List<ErdHistoryVO> getHistories(int erdNo) {
 		// TODO Auto-generated method stub
-		return mapper.getHistories();
+		return mapper.getHistories(erdNo);
 	}
 
 }

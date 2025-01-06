@@ -15,6 +15,7 @@ import org.codesync.service.ErdService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -104,10 +105,10 @@ public class ErdController {
         }
     }
     
-    @GetMapping("/history")
-    public ResponseEntity<List<ErdHistoryVO>> getHistories() {
+    @GetMapping("/history/{erdNo}")
+    public ResponseEntity<List<ErdHistoryVO>> getHistories(@PathVariable("erdNo") int erdNo) {
     	try {
-    		List<ErdHistoryVO> histories = service.getHistories(); 
+    		List<ErdHistoryVO> histories = service.getHistories(erdNo); 
     		return ResponseEntity.ok(histories);
     	} catch (Exception e) {
     		return ResponseEntity.status(HttpStatus.SC_INTERNAL_SERVER_ERROR).body(null);

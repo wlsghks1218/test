@@ -55,14 +55,14 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler{
 	            int result4 = pmapper.chkProjectExist(projectToken);
 	            if(result4 == 0) {
 	            	session.removeAttribute("token");
-	            	response.sendRedirect("http://localhost:3000/invalidProject");
+	            	response.sendRedirect("http://116.121.53.142:9100/invalidProject");
 	            	return;
 	            }
 	        	
 	        	int result = mapper.getProjectCount(userNo);
 	        	if(result >= 3) {
 	        		session.removeAttribute("token");
-	        		response.sendRedirect("http://localhost:3000/projectLimit");
+	        		response.sendRedirect("http://116.121.53.142:9100/projectLimit");
 	        	}
 	        	
 	        	int projectNo = pmapper.getProjectNoByToken(projectToken);
@@ -73,11 +73,11 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler{
 	        	int result3 = pmapper.chkProjectJoin(params);
 	        	if(result3 > 0) {
 	        		session.removeAttribute("token");
-	        		response.sendRedirect("http://localhost:3000/alreadyJoined");
+	        		response.sendRedirect("http://116.121.53.142:9100/alreadyJoined");
 	        	}else {
 	        		int result2 = pmapper.joinProjectByToken(params);
 	        		session.removeAttribute("token");
-	        		response.sendRedirect("http://localhost:3000/");
+	        		response.sendRedirect("http://116.121.53.142:9100/");
 	        	}
 	        }
 	        

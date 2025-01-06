@@ -201,6 +201,8 @@ public class ProjectServiceImpl implements ProjectService{
 	
 	@Override
 	public int updatePortfolio(Map<String, Object> params) {
+    	log.warn("여기타고있어요2");
 		return mapper.updatePortfolio(params);
 	}
+	
 }

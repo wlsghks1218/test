@@ -100,7 +100,7 @@ public class MemberController {
     }
 
     @PostMapping("/login")
-    public void  login(@RequestBody LoginRequest loginRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException{
+    public void login(@RequestBody LoginRequest loginRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException{
     	log.warn("loginRequest : "+ loginRequest);
 		    UsernamePasswordAuthenticationToken authToken =
 		            new UsernamePasswordAuthenticationToken(loginRequest.getUserId(), loginRequest.getUserPw());

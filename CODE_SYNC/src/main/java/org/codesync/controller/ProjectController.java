@@ -1,7 +1,6 @@
 package org.codesync.controller;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +35,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RestController;import com.google.common.collect.MapMaker;
 
 import lombok.extern.log4j.Log4j;
 
@@ -99,7 +98,7 @@ public class ProjectController {
             int result = service.inviteUser(inviteInfo);
 
             // Construct the invitation link
-            String inviteLink = "http://116.121.53.142:9100/project/acceptInvite?token=" + token;
+            String inviteLink = "http://localhost:9090/project/acceptInvite?token=" + token;
 
             // Construct the email content
             String subject = "CODE SYNC: You are invited to join the project '" + projectName + "'";
@@ -118,12 +117,11 @@ public class ProjectController {
         }
     }
 
-    private void sendInvitationEmail(String email, String subject, String content) throws MessagingException, UnsupportedEncodingException {
+    private void sendInvitationEmail(String email, String subject, String content) throws MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
         helper.setTo(email);
-        helper.setFrom("kimkacang@gmail.com", "CODE SYNC"); // 발송자 이메일 + 발송자 이름
         helper.setSubject(subject);
         helper.setText(content, true);
 
@@ -137,11 +135,11 @@ public class ProjectController {
         String reason = service.acceptProjectInvite(token);
 
         if ("token expired".equals(reason)) {
-            response.sendRedirect("http://116.121.53.142:9100/expiredPage");
+            response.sendRedirect("http://localhost:3000/expiredPage");
         } else if ("already joined".equals(reason)) {
-            response.sendRedirect("http://116.121.53.142:9100/alreadyJoined");
+            response.sendRedirect("http://localhost:3000/alreadyJoined");
         } else if ("join success".equals(reason)) {
-            response.sendRedirect("http://116.121.53.142:9100/");
+            response.sendRedirect("http://localhost:3000/");
         }
     }
     
@@ -191,7 +189,7 @@ public class ProjectController {
         if (authentication == null || !authentication.isAuthenticated() || authentication.getPrincipal().equals("anonymousUser")) {
         	log.warn("로그인되지 않음");
         	session.setAttribute("token", projectToken);
-        	response.sendRedirect("http://116.121.53.142:9100/login");
+        	response.sendRedirect("http://localhost:3000/login");
         	return;
         }
         
@@ -203,14 +201,14 @@ public class ProjectController {
         int result4 = service.chkProjectExist(projectToken);
         if(result4 == 0) {
         	session.removeAttribute("token");
-        	response.sendRedirect("http://116.121.53.142:9100/invalidProject");
+        	response.sendRedirect("http://localhost:3000/invalidProject");
         	return;
         }
         
         int result = mservice.getProjectCount(userNo);
         if(result >= 3) {
         	session.removeAttribute("token");
-        	response.sendRedirect("http://116.121.53.142:9100/projectLimit");
+        	response.sendRedirect("http://localhost:3000/projectLimit");
         	return;
         }
         
@@ -224,11 +222,11 @@ public class ProjectController {
         int result3 = service.chkProjectJoin(params);
         if(result3 > 0) {
         	session.removeAttribute("token");
-        	response.sendRedirect("http://116.121.53.142:9100/alreadyJoined");
+        	response.sendRedirect("http://localhost:3000/alreadyJoined");
         }else {
         	int result2 = service.joinProjectByToken(params);
         	session.removeAttribute("token");
-	    	response.sendRedirect("http://116.121.53.142:9100/");
+	    	response.sendRedirect("http://localhost:3000/");
         }
     }
     
@@ -255,9 +253,10 @@ public class ProjectController {
     	int result = service.updateProject(vo);
     	return result;
     }
-    
+   
     @PostMapping("/updatePortfolio")
     public int updatePortfolio(@RequestBody Map<String, Object> params) {
+    	log.warn("여기타고있어요1" + params);
     	int result = service.updatePortfolio(params);
     	return result;
     }

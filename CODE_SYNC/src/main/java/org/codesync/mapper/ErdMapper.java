@@ -58,6 +58,6 @@ public interface ErdMapper {
 
 	public int addHistory(ErdHistoryVO history);
 
-	public List<ErdHistoryVO> getHistories();
+	public List<ErdHistoryVO> getHistories(int erdNo);
 
 }

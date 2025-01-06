@@ -172,5 +172,25 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         DELETE FROM CodeSync_file_tbl
         WHERE folderNo = #{folderNo} AND fileName = #{fileName}
     </delete>
+      <select id="getProjectNoByCodeSyncNo" parameterType="int" resultType="int">
+        SELECT projectNo
+        FROM CodeSync_tbl
+        WHERE codeSyncNo = #{codeSyncNo}
+    </select>
+     <select id="getHistoryByProjectNo" parameterType="int" resultType="org.codesync.domain.CodeSyncHistoryVO">
+        SELECT *
+        FROM codeSync_his_tbl
+        WHERE projectNo = #{projectNo}
+    </select>
+     <select id="getFileNameByFileNo" parameterType="int" resultType="String">
+        SELECT fileName
+        FROM CodeSync_file_tbl
+        WHERE fileNo = #{fileNo}
+    </select>
+       <insert id="insertSaveCodeHis" parameterType="org.codesync.domain.CodeSyncHistoryVO">
+     INSERT INTO codeSync_his_tbl (projectNo, fileName, action, userId)
+    VALUES (#{projectNo}, #{fileName}, #{action},#{userId})
+    </insert>
+     
      
 </mapper>

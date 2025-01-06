@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+해당 xml 문서의 구조가 마이바티스의 매퍼를 구성하는 구조로 나타나 있음을 알려주는 설정
+특히 이 설정은 configure 부분의 xml과 다르므로 설정시 주의 필요 
+-->
+<!DOCTYPE mapper 
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.codesync.mapper.CodeSyncChatMapper"> <!-- 마이바티스 환경 설정 xml에 사용할 이름 -->
+	
+	<select id="getChatHistory"
+		resultType="org.codesync.domain.CodeSyncChatContentVO">
+    <![CDATA[
+    SELECT
+        codeSyncNo,
+        userNo,
+        userId,
+        content,
+        chatTime
+    FROM CodeSync_chat_tbl
+    WHERE codeSyncNo = #{codeSyncNo}
+      AND chatTime >= CONCAT(CURDATE(), ' 00:00:00')
+      AND chatTime < CONCAT(CURDATE() + INTERVAL 1 DAY, ' 00:00:00')
+    ORDER BY chatTime ASC
+    ]]>
+	</select>
+	
+	<insert id="insertChatContent"
+		parameterType="org.codesync.domain.CodeSyncChatContentVO">
+		insert into CodeSync_chat_tbl (codeSyncNo, userNo, content, chatTime, userId)
+		values (#{codeSyncNo}, #{userNo}, #{content}, #{chatTime}, #{userId})
+	</insert>
+</mapper>

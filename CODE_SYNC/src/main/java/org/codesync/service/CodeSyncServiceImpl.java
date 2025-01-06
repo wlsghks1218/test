@@ -1,8 +1,10 @@
 package org.codesync.service;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.codesync.domain.CodeSyncHistoryVO;
 import org.codesync.domain.FileVO;
 import org.codesync.domain.FolderStructureVO;
 import org.codesync.domain.FolderVO;
@@ -22,7 +24,6 @@ public class CodeSyncServiceImpl implements CodeSyncService {
 
     // 1. 폴더 데이터 저장 후 filePath 리턴
     @Override
-    @Transactional
     public String saveFolderData(FolderVO folder) {
         try {
             // 폴더 저장 (folderNo 생성)
@@ -37,6 +38,7 @@ public class CodeSyncServiceImpl implements CodeSyncService {
     }
 
     // 2. 부모 폴더의 fileNo 찾기
+    @Override
     public Integer findParentFolderFileNo(String parentPath,int codeSyncNo) {
         if (parentPath == null || !parentPath.contains("/")) {
             return null; // 루트 폴더일 경우 null 반환
@@ -53,6 +55,7 @@ public class CodeSyncServiceImpl implements CodeSyncService {
     }
 
     // 3. 자식 폴더의 부모 폴더 ID 업데이트
+    @Override
     public void updateFolderParentId(int folderNo, Integer parentFolderId) {
         mapper.updateFolderParentId(folderNo, parentFolderId);
     }
@@ -73,15 +76,30 @@ public class CodeSyncServiceImpl implements CodeSyncService {
         }
     }
 
-    // 파일 저장 메서드
+    @Override
     @Transactional
     public void saveFile(FileVO file) {
         try {
+            // 파일 이름이 .map으로 끝나는지 체크
+            if (file.getFileName().endsWith(".map")) {
+                String errorMessage = "Source map files cannot be saved: " + file.getFileName();
+                log.error(errorMessage);  // 로깅
+                // .map 파일은 건너뛰고, 예외는 던지지 않음
+                return;  // 메소드 종료
+            }
+
+            // 파일 저장 로직
             mapper.insertFile(file);  // MyBatis Mapper를 통해 DB에 파일 데이터 저장
+
         } catch (Exception e) {
-            throw new RuntimeException("Failed to save file: " + file.getFileName(), e);
+            // 다른 예외가 발생하면 에러로 로깅
+            String errorMessage = "Failed to save file: " + file.getFileName();
+            log.error(errorMessage, e);  // 로깅 추가
+            // 예외 던지지 않고 로그만 남기고 계속 진행
         }
     }
+
+
     @Override
     public FolderStructureVO getFolderStructureByCodeSyncNo(int codeSyncNo) {
         try {
@@ -317,6 +335,24 @@ public void pasteFile(FileVO file) {
 public void deleteFile(FileVO file) {
 	mapper.deleteFile(file);
 	
+}
+@Override
+public int getProjectNoByCodeSyncNo(int codeSyncNo) {
+	int result = mapper.getProjectNoByCodeSyncNo(codeSyncNo);
+	return result;
+}
+@Override
+public List<CodeSyncHistoryVO> getHistoryByProjectNo(int projectNo) {
+	
+	return mapper.getHistoryByProjectNo(projectNo);
+}
+@Override
+public String getFileNameByFileNo(int fileNo) {
+	return mapper.getFileNameByFileNo(fileNo);
+}
+@Override
+public void insertSaveCodeHis(CodeSyncHistoryVO hvo) {
+	mapper.insertSaveCodeHis(hvo);
 }
 }
 

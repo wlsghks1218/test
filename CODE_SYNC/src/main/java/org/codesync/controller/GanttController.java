@@ -3,7 +3,9 @@ package org.codesync.controller;
 import java.util.List;
 import java.util.Map;
 
+import org.codesync.domain.CodeSyncHistoryVO;
 import org.codesync.domain.DocsHistoryVO;
+import org.codesync.domain.ErdHistoryVO;
 import org.codesync.domain.GanttVO;
 import org.codesync.service.GanttService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,5 +56,15 @@ public class GanttController {
     @GetMapping("/getDocsHistoryForGantt")
     public List<DocsHistoryVO> getDocsHistoryForGantt(@RequestParam("projectNo") int projectNo) {
     	return service.getDocsHistoryForGantt(projectNo); 
+    }
+    
+    @GetMapping("/getErdHistoryForGantt")
+    public List<ErdHistoryVO> getErdHistoryForGantt(@RequestParam("projectNo") int projectNo){
+    	return service.getErdHistoryForGantt(projectNo);
+    }
+    
+    @GetMapping("/getCodeHistoryForGantt")
+    public List<CodeSyncHistoryVO> getCodeHistoryForGantt(@RequestParam("projectNo") int projectNo){
+    	return service.getCodeHistoryForGantt(projectNo);
     }
 }

@@ -9,5 +9,4 @@ public class ProjectVO {
 	int projectNo, muserNo;
 	String projectName, projectDesc, projectDisclosure, token;
 	Date projectCreateDate;
-	String portfolioLink;
 }

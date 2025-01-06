@@ -2,11 +2,16 @@ package org.codesync.controller;
 
 import java.nio.file.Files;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.codesync.domain.ChatContentVO;
+import org.codesync.domain.CodeSyncChatContentVO;
+import org.codesync.domain.CodeSyncHistoryVO;
 import org.codesync.domain.FileVO;
 import org.codesync.domain.FolderStructureVO;
 import org.codesync.domain.FolderVO;
+import org.codesync.service.CodeSyncChatService;
 import org.codesync.service.CodeSyncService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,6 +19,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,6 +36,9 @@ public class CodeSyncController {
 
     @Autowired
     private CodeSyncService service;
+   
+    @Autowired
+    private CodeSyncChatService chatService;
 
     @PostMapping(value = "/uploadFolder", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<String> uploadFolder(@RequestBody FolderStructureVO folderStructure) {
@@ -85,24 +94,32 @@ public class CodeSyncController {
 
          // 4. 파일 데이터 처리
             folderStructure.getFiles().forEach(file -> {
-            	
                 try {
                     log.info("Processing file: " + file.getFileName());
                     System.out.println("확장자는?" + file.getExtension());
-                    
+
+                    // 파일의 확장자가 .map인지 체크
+                    if (file.getFileName().endsWith(".map")) {
+                        String errorMessage = "Source map files cannot be saved: " + file.getFileName();
+                        log.error(errorMessage);  // 로깅
+                        // .map 파일은 저장하지 않고 넘어감
+                        return;
+                    }
+
                     int codeSyncNo = file.getCodeSyncNo();
-                   int folderNo = service.getFolderNo(file.getFilePath(),codeSyncNo);
-                   file.setFolderNo(folderNo);
-                   
-                   service.saveFile(file);
-                    
+                    int folderNo = service.getFolderNo(file.getFilePath(), codeSyncNo);
+                    file.setFolderNo(folderNo);
+
+                    // 단일 FileVO 객체를 서비스로 전달
+                    service.saveFile(file);  // 파일 저장
+
                     log.info("File saved successfully: " + file.getFileName());
                 } catch (Exception ex) {
                     log.error("Error saving file: " + file.getFileName(), ex);
-                    throw new RuntimeException("Failed to save file: " + file.getFileName(), ex);
+                    // 예외 던지지 않고 계속 진행
+                    log.warn("Skipping file due to error: " + file.getFileName());
                 }
             });
-
             log.debug("폴더 및 파일 구조 처리 완료");
             return new ResponseEntity<>("Folder structure uploaded successfully!", HttpStatus.OK);
 
@@ -150,10 +167,23 @@ public class CodeSyncController {
             boolean isSaved = service.saveCode(request.getFileNo(), request.getContent());
 
             if (isSaved) {
+            	int codeSyncNo = request.getCodeSyncNo();
+            	int projectNo = service.getProjectNoByCodeSyncNo(codeSyncNo);
+            	String fileName = service.getFileNameByFileNo(request.getFileNo());
+            	String userId = request.getUserId();
+            	
+            	CodeSyncHistoryVO hvo = new CodeSyncHistoryVO();
+            	hvo.setAction(1);
+            	hvo.setFileName(fileName);
+            	hvo.setProjectNo(projectNo);
+            	hvo.setUserId(userId);
+            	service.insertSaveCodeHis(hvo);
+            	
                 return new ResponseEntity<>("Code saved successfully!", HttpStatus.OK);
             } else {
                 return new ResponseEntity<>("Failed to save code", HttpStatus.INTERNAL_SERVER_ERROR);
             }
+            
 
         } catch (Exception e) {
             log.error("Error saving code", e);
@@ -204,5 +234,30 @@ public class CodeSyncController {
 
         return ResponseEntity.ok(response);
     }
-    
+    @GetMapping("/chatHistory")
+    public ResponseEntity<List<CodeSyncChatContentVO>> getChatHistory(@RequestParam String codeSyncNo) {
+        try {
+            List<CodeSyncChatContentVO> chatHistory = chatService.getChatHistory(codeSyncNo); // 채팅 기록 가져오기
+            return ResponseEntity.ok(chatHistory);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+    @GetMapping("/history/{codeSyncNo}")
+    public ResponseEntity<List<CodeSyncHistoryVO>> getHistory(@PathVariable int codeSyncNo) {
+        try {
+            // CodeSyncNo에 맞는 히스토리 데이터를 가져옵니다.
+        	int projectNo = service.getProjectNoByCodeSyncNo(codeSyncNo);
+            List<CodeSyncHistoryVO> history = service.getHistoryByProjectNo(projectNo); 
+            if (history != null && !history.isEmpty()) {
+                return ResponseEntity.ok(history);
+            } else {
+                return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+            }
+        } catch (Exception e) {
+            log.error("Error fetching history for codeSyncNo: " + codeSyncNo, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
 }

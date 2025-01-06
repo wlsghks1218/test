@@ -165,12 +165,12 @@
 	</update>
 	
 	<insert id="addHistory" parameterType="org.codesync.domain.ErdHistoryVO">
-		insert into erd_history_tbl (action, erdUpdateDate)
-		values (#{action}, #{erdUpdateDate})
+		insert into erd_history_tbl (action, erdUpdateDate, erdNo, userId)
+		values (#{action}, #{erdUpdateDate}, #{erdNo}, #{userId})
 	</insert>
 	
 	<select id="getHistories" resultType="org.codesync.domain.ErdHistoryVO">
-		select * from erd_history_tbl;
+		select * from erd_history_tbl where erdNo = #{erdNo}
 	</select>
 
 </mapper>

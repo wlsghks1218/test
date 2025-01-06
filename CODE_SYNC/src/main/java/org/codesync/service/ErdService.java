@@ -57,6 +57,6 @@ public interface ErdService {
 
 	public int addHistory(ErdHistoryVO history);
 
-	public List<ErdHistoryVO> getHistories();
+	public List<ErdHistoryVO> getHistories(int erdNo);
 
 }

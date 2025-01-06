@@ -3,6 +3,7 @@ package org.codesync.mapper;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
+import org.codesync.domain.CodeSyncHistoryVO;
 import org.codesync.domain.FileVO;
 import org.codesync.domain.FolderVO;
 
@@ -75,6 +76,14 @@ public interface CodeSyncMapper {
 	public FileVO getFileData(FileVO file);
 
 	public void deleteFile(FileVO file);
+
+	public int getProjectNoByCodeSyncNo(int codeSyncNo);
+
+	public List<CodeSyncHistoryVO> getHistoryByProjectNo(int projectNo);
+
+	public String getFileNameByFileNo(int fileNo);
+
+	public void insertSaveCodeHis(CodeSyncHistoryVO hvo);
 
 
 	
