@@ -18,4 +18,8 @@ public interface MemberService {
     public int updatePassword(Map<String, Object> params);
     public int updateEmail(Map<String, String> requestData);
     public int getProjectCount(int userNo);
+    public List<UserDTO> findId(String email);
+    public int chkEmailExistForPassword(Map<String, String> request);
+    public int changePassword(Map<String, String> request);
+    public int chkEmailExist(String userEmail);
 }

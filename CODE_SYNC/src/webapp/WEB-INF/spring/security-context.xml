@@ -12,6 +12,7 @@
     <bean id="bcryptPasswordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"/>
     <bean id="customUserDetailService" class="org.codesync.security.CustomUserDetailService"/>
     <bean id="customLogoutHandler" class="org.codesync.security.CustomLogoutHandler"/>
+    <bean id="customFailureHandler" class="org.codesync.security.CustomFailureHandler"/>
 
     <!-- CORS Configuration -->
     <bean id="corsConfigurationSource" class="org.springframework.web.cors.UrlBasedCorsConfigurationSource">
@@ -63,7 +64,7 @@
         <security:form-login
             login-page="/member/login"
             authentication-success-handler-ref="customLoginSuccess"
-			authentication-failure-url="/member/login?error=true"/>
+			authentication-failure-url="customFailureHandler"/>
 
         <!-- 접근 거부 핸들러 -->
         <security:access-denied-handler ref="customAccessDenied"/>

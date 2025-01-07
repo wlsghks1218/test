@@ -100,8 +100,12 @@ public class MemberController {
     }
 
     @PostMapping("/login")
-    public void login(@RequestBody LoginRequest loginRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException{
+    public void login(@RequestBody(required = false) LoginRequest loginRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException{
     	log.warn("loginRequest : "+ loginRequest);
+        if (loginRequest == null) {
+            log.warn("loginRequest is null. Request ignored.");
+            return;
+        }
 		    UsernamePasswordAuthenticationToken authToken =
 		            new UsernamePasswordAuthenticationToken(loginRequest.getUserId(), loginRequest.getUserPw());
 		    log.warn("authToken : " + authToken);
@@ -185,5 +189,28 @@ public class MemberController {
     @GetMapping("/user")
     public Authentication getUser() {
       return SecurityContextHolder.getContext().getAuthentication();
+    }
+    
+    @PostMapping("/findId")
+    public List<UserDTO> findId(@RequestBody Map<String, String> request) {
+    	String email = request.get("email");
+    	return service.findId(email);
+    }
+    
+    @PostMapping("/chkEmailExistForPassword")
+    public int chkEmailExistForPassword(@RequestBody Map<String, String> request) {
+    	return service.chkEmailExistForPassword(request);
+    }
+    
+    @PostMapping("/changePassword")
+    public int changePassword(@RequestBody Map<String, String> request) {
+    	String userPw = pwencoder.encode(request.get("newPassword"));
+    	request.put("userPw", userPw);
+    	return service.changePassword(request);
+    }
+    
+    @PostMapping("/chkEmailExist")
+    public int chkEmailExist(@RequestParam("userEmail") String userEmail) {
+    	return service.chkEmailExist(userEmail);
     }
 }

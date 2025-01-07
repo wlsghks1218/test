@@ -21,7 +21,7 @@ public class CustomUserDetailService implements UserDetailsService{
 	    log.warn("userId : " + userId);
 	    UserDTO vo = mapper.read(userId);
 	    if (vo == null) {
-	        log.warn(userId+"유저 없음");
+	        log.info(userId+"유저 없음");
 	        throw new UsernameNotFoundException(userId + "유저 없음");
 	    }
 	    log.warn("user : " + vo);

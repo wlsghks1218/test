@@ -2,6 +2,7 @@ package org.codesync.domain;
 
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
+import org.apache.commons.net.ftp.FTPFile;
 
 import lombok.extern.log4j.Log4j;
 
@@ -9,6 +10,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Log4j
 public class FTPUtil {
@@ -162,6 +165,58 @@ public class FTPUtil {
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
+        }
+    }
+    
+    public List<String> listFiles(String folderPath) {
+        List<String> fileList = new ArrayList<>();
+        try {
+            FTPClient ftpClient = new FTPClient();
+            ftpClient.connect(server, port);
+            ftpClient.login(user, password);
+
+            FTPFile[] files = ftpClient.listFiles(folderPath);
+            for (FTPFile file : files) {
+                if (file.isFile()) {
+                    fileList.add(file.getName());
+                }
+            }
+
+            ftpClient.logout();
+            ftpClient.disconnect();
+        } catch (Exception e) {
+            log.error("FTP 파일 목록 가져오기 중 오류 발생", e);
+        }
+        return fileList;
+    }
+    
+    public boolean deleteFolder(String folderPath) {
+    	FTPClient ftpClient = new FTPClient();
+        try {
+            ftpClient.connect(server, port);
+            ftpClient.login(user, password);
+            ftpClient.enterLocalPassiveMode();
+            // 폴더 내 파일 삭제
+            FTPFile[] files = ftpClient.listFiles(folderPath);
+            for (FTPFile file : files) {
+                String filePath = folderPath + "/" + file.getName();
+                if (!ftpClient.deleteFile(filePath)) {
+                    log.warn("파일 삭제 실패: " + filePath);
+                    return false;
+                }
+            }
+
+            // 폴더 삭제
+            if (ftpClient.removeDirectory(folderPath)) {
+                log.info("폴더 삭제 성공: " + folderPath);
+                return true;
+            } else {
+                log.warn("폴더 삭제 실패: " + folderPath);
+                return false;
+            }
+        } catch (IOException e) {
+            log.error("폴더 삭제 중 오류 발생", e);
+            return false;
         }
     }
 

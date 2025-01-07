@@ -104,4 +104,24 @@ public class MemberServiceImpl implements MemberService{
     public int getProjectCount(int userNo) {
     	return mapper.getProjectCount(userNo);
     }
+    
+    @Override
+    public List<UserDTO> findId(String email) {
+    	return mapper.findId(email);
+    }
+    
+    @Override
+    public int chkEmailExistForPassword(Map<String, String> request) {
+    	return mapper.chkEmailExistForPassword(request);
+    }
+    
+    @Override
+    public int changePassword(Map<String, String> request) {
+    	return mapper.changePassword(request);
+    }
+    
+    @Override
+    public int chkEmailExist(String userEmail) {
+    	return mapper.chkEmailExist(userEmail);
+    }
 }

@@ -75,20 +75,25 @@ public class DocsController {
         if (file.isEmpty()) {
             return ResponseEntity.badRequest().body("파일이 선택되지 않았습니다.");
         }
-        log.warn(file.getOriginalFilename());
 
-        String folderPath = FTP_UPLOAD_PATH + "/" + wrapperNo + "/" + columnNo;
-        String uploadPath = folderPath + "/" + file.getOriginalFilename();
-        
         String originalFilename = file.getOriginalFilename();
-        if (originalFilename != null) {
-            originalFilename = new String(originalFilename.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
+        if (originalFilename == null || originalFilename.trim().isEmpty()) {
+            return ResponseEntity.badRequest().body("유효하지 않은 파일명입니다.");
         }
 
-        File tempFile = new File(TEMP_DIR, originalFilename);
         try {
+            // 파일명 UTF-8 디코딩 처리
+        	originalFilename = new String(originalFilename.getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
+            log.warn("디코딩된 파일명: " + originalFilename);
+
+            String folderPath = FTP_UPLOAD_PATH + "/" + wrapperNo + "/" + columnNo;
+            String uploadPath = folderPath + "/" + originalFilename;
+
+            // 임시 파일 생성
+            File tempFile = new File(TEMP_DIR, originalFilename);
             file.transferTo(tempFile);
 
+            // FTP 업로드
             FTPUtil ftpUtil = new FTPUtil(FTP_SERVER, FTP_PORT, FTP_USER, FTP_PASSWORD);
             ftpUtil.createDirectory(folderPath);
 
@@ -100,11 +105,11 @@ public class DocsController {
 
             log.warn("FTP 업로드 성공: " + uploadPath);
 
+            // DB에 파일 정보 저장
             DocsVO vo = new DocsVO();
             vo.setUploadPath(uploadPath);
-            vo.setDocsType(file.getOriginalFilename()
-                    .substring(file.getOriginalFilename().lastIndexOf(".") + 1));
-            vo.setDocsName(file.getOriginalFilename());
+            vo.setDocsType(originalFilename.substring(originalFilename.lastIndexOf(".") + 1));
+            vo.setDocsName(originalFilename);
             vo.setColumnNo(columnNo);
             vo.setUploadUserNo(uploadUserNo);
 
@@ -132,8 +137,18 @@ public class DocsController {
         } catch (IOException e) {
             log.error("파일 처리 중 오류 발생", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("파일 처리 중 오류 발생: " + e.getMessage());
+        } catch (Exception e) {
+            log.error("예상치 못한 오류 발생", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("예상치 못한 오류 발생: " + e.getMessage());
         } finally {
-            tempFile.delete();
+            try {
+                File tempFile = new File(TEMP_DIR, originalFilename);
+                if (tempFile.exists() && !tempFile.delete()) {
+                    log.warn("임시 파일 삭제 실패: " + tempFile.getAbsolutePath());
+                }
+            } catch (Exception e) {
+                log.warn("임시 파일 삭제 중 예외 발생", e);
+            }
         }
     }
 
@@ -178,9 +193,10 @@ public class DocsController {
 
         try {
             FTPUtil ftpUtil = new FTPUtil(FTP_SERVER, FTP_PORT, FTP_USER, FTP_PASSWORD);
-            File tempFile = new File(System.getProperty("java.io.tmpdir"), filePath.substring(filePath.lastIndexOf("/") + 1));
+            String decodedFilePath = new String(filePath.getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
+            File tempFile = new File(System.getProperty("java.io.tmpdir"), filePath.substring(decodedFilePath.lastIndexOf("/") + 1));
 
-            boolean isDownloaded = ftpUtil.downloadFile(filePath, tempFile);
+            boolean isDownloaded = ftpUtil.downloadFile(decodedFilePath, tempFile);
             if (!isDownloaded) {
                 log.warn("FTP에서 파일 다운로드 실패");
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
@@ -235,32 +251,41 @@ public class DocsController {
         }
     }
 
-    @GetMapping("/view")
-    public ResponseEntity<String> viewFile(@RequestParam("filePath") String filePath) {
-        log.warn("Requested filePath: " + filePath);
-
-        try {
-            // NAS URL 생성
-            String nasHttpUrl = "http://116.121.53.142" + filePath; // NAS의 HTTP URL 생성
-            log.warn("Generated NAS URL: " + nasHttpUrl);
-
-            // 클라이언트에 URL 반환
-            return ResponseEntity.ok(nasHttpUrl);
-        } catch (Exception e) {
-            log.error("NAS URL 생성 중 오류 발생", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("파일 URL 생성 중 오류가 발생했습니다.");
-        }
-    }
-
-
     @DeleteMapping("/deleteColumn")
     public int deleteColumn(@RequestParam("wrapperNo") int wrapperNo, @RequestParam("columnIndex") int columnIndex) {
-    	Map<String, Integer> params = new HashMap<>();
-    	params.put("wrapperNo", wrapperNo);
-    	params.put("columnIndex", columnIndex);
-    	int result = service.deleteColumn(params);
-    	return result;
+        // FTP 경로 설정
+        String folderPath = FTP_UPLOAD_PATH + "/" + wrapperNo + "/" + columnIndex;
+        FTPUtil ftpUtil = new FTPUtil(FTP_SERVER, FTP_PORT, FTP_USER, FTP_PASSWORD);
+
+        try {
+            // 1. 폴더 내 파일 삭제
+            List<String> files = ftpUtil.listFiles(folderPath); // 폴더 내 파일 목록 가져오기
+            for (String filePath : files) {
+                boolean isFileDeleted = ftpUtil.deleteFile(folderPath + "/" + filePath);
+                if (isFileDeleted) {
+                    log.info("FTP 서버에서 파일 삭제 성공: " + filePath);
+                } else {
+                    log.warn("FTP 서버에서 파일 삭제 실패: " + filePath);
+                }
+            }
+
+            // 2. 폴더 삭제
+            boolean isFolderDeleted = ftpUtil.deleteFolder(folderPath);
+            if (isFolderDeleted) {
+                log.info("FTP 서버에서 폴더 삭제 성공: " + folderPath);
+            } else {
+                log.warn("FTP 서버에서 폴더 삭제 실패: " + folderPath);
+            }
+
+            // 3. DB에서 컬럼 정보 삭제
+            Map<String, Integer> params = new HashMap<>();
+            params.put("wrapperNo", wrapperNo);
+            params.put("columnIndex", columnIndex);
+            return service.deleteColumn(params);
+        } catch (Exception e) {
+            log.error("컬럼 삭제 중 오류 발생", e);
+            return 0; // 실패 시 0 반환
+        }
     }
     
     @PostMapping("/uploadHIstory")
