@@ -204,5 +204,9 @@ public class ProjectServiceImpl implements ProjectService{
     	log.warn("여기타고있어요2");
 		return mapper.updatePortfolio(params);
 	}
-	
+
+	@Override
+	public int leaveProject(Map<String, Integer> params) {
+		return mapper.leaveProject(params);
+	}
 }

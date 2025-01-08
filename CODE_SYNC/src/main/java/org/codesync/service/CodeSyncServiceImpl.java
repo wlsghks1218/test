@@ -8,6 +8,7 @@ import org.codesync.domain.CodeSyncHistoryVO;
 import org.codesync.domain.FileVO;
 import org.codesync.domain.FolderStructureVO;
 import org.codesync.domain.FolderVO;
+import org.codesync.domain.ProjectVO;
 import org.codesync.mapper.CodeSyncMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -353,6 +354,42 @@ public String getFileNameByFileNo(int fileNo) {
 @Override
 public void insertSaveCodeHis(CodeSyncHistoryVO hvo) {
 	mapper.insertSaveCodeHis(hvo);
+}
+@Override
+public void insertCreateFolderHis(CodeSyncHistoryVO history) {
+
+	mapper.insertCreateFolderHis(history);
+	
+}
+@Override
+public void insertPasteFolderHistory(CodeSyncHistoryVO history) {
+	mapper.insertPasteFolderHistory(history);
+	
+}
+@Override
+public void insertPasteFileHistory(CodeSyncHistoryVO history) {
+	mapper.insertPasteFileHistory(history);
+}
+@Override
+public void insertRenameFolderHistory(CodeSyncHistoryVO history) {
+	mapper.insertRenameFolderHistory(history);
+	
+}
+@Override
+public void insertRenameFileHistory(CodeSyncHistoryVO history) {
+	mapper.insertRenameFileHistory(history);
+	
+}
+@Override
+public ProjectVO getProject(int codeSyncNo) {
+	int projectNo= mapper.getProjectNoByCodeSyncNo(codeSyncNo);
+	ProjectVO result = mapper.getProject(projectNo);
+	return result;
+}
+@Override
+public int checkFolderExistence(Long codeSyncNo) {
+	// TODO Auto-generated method stub
+	return mapper.checkFolderExistence(codeSyncNo);
 }
 }
 

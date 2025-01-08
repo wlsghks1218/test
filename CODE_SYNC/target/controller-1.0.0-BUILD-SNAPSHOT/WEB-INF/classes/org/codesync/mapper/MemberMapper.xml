@@ -43,4 +43,16 @@
 	<select id="getProjectCount" resultType="int">
 		select count(*) from project_user_tbl where userNo = #{userNo}
 	</select>
+	<select id="findId" resultType="org.codesync.domain.UserDTO">
+		select * from user_tbl where userEmail = #{email}
+	</select>
+	<select id="chkEmailExistForPassword" resultType="int">
+		select count(*) from user_tbl where userEmail = #{email} and userId = #{userId}
+	</select>
+	<update id="changePassword">
+		update user_tbl set userPw = #{userPw} where userId = #{userId} and userEmail = #{email}
+	</update>
+	<select id="chkEmailExist" resultType="int">
+		select count(*) from user_tbl where userEmail = #{userEmail}
+	</select>
 </mapper>

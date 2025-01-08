@@ -4,10 +4,10 @@
 
 <mapper namespace="org.codesync.mapper.AdminMapper">
 	<select id="getProjectList" resultType="org.codesync.domain.ProjectVO">
-		select * from project_tbl
+		select * from project_tbl order by projectCreateDate DESC
 	</select>
 	<select id="getUserList" resultType="org.codesync.domain.UserDTO">
-		select * from user_tbl
+		select * from user_tbl order by userRegDate DESC
 	</select>
 	<select id="getProjectDetail" resultType="org.codesync.domain.ProjectVO">
 		select * from project_tbl where projectNo = #{projectNo}

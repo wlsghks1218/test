@@ -32,4 +32,5 @@ public interface ProjectService {
 	public ProjectVO getProjectByProjectNo(int projectNo);
 	public int updateProject(ProjectVO vo);
 	public int updatePortfolio(Map<String, Object> params);
+	public int leaveProject(Map<String, Integer> params);
 }

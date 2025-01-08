@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Param;
 import org.codesync.domain.CodeSyncHistoryVO;
 import org.codesync.domain.FileVO;
 import org.codesync.domain.FolderVO;
+import org.codesync.domain.ProjectVO;
 
 public interface CodeSyncMapper {
 
@@ -83,7 +84,22 @@ public interface CodeSyncMapper {
 
 	public String getFileNameByFileNo(int fileNo);
 
+	// 히스토리
 	public void insertSaveCodeHis(CodeSyncHistoryVO hvo);
+
+	public void insertCreateFolderHis(CodeSyncHistoryVO history);
+
+	public void insertPasteFolderHistory(CodeSyncHistoryVO history);
+
+	public void insertPasteFileHistory(CodeSyncHistoryVO history);
+
+	public void insertRenameFolderHistory(CodeSyncHistoryVO history);
+
+	public void insertRenameFileHistory(CodeSyncHistoryVO history);
+
+	public ProjectVO getProject(int projectNo);
+
+	public int checkFolderExistence(Long codeSyncNo);
 
 
 	

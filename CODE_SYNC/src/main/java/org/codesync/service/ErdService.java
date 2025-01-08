@@ -6,6 +6,7 @@ import org.codesync.domain.ArrowVO;
 import org.codesync.domain.ChatContentVO;
 import org.codesync.domain.ErdHistoryVO;
 import org.codesync.domain.MemoVO;
+import org.codesync.domain.ProjectVO;
 import org.codesync.domain.TableFieldsVO;
 import org.codesync.domain.TableVO;
 
@@ -57,6 +58,8 @@ public interface ErdService {
 
 	public int addHistory(ErdHistoryVO history);
 
-	public List<ErdHistoryVO> getHistories(int erdNo);
+	public List<ErdHistoryVO> getHistories();
+
+	public ProjectVO getProject(int erdNo);
 
 }

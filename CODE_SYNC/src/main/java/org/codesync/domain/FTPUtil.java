@@ -87,11 +87,13 @@ public class FTPUtil {
     
     public boolean downloadFile(String remotePath, File localFile) {
         FTPClient ftpClient = new FTPClient();
+        ftpClient.setControlEncoding("UTF-8");
         try (FileOutputStream outputStream = new FileOutputStream(localFile)) {
             ftpClient.connect(server, port);
             ftpClient.login(user, password);
             ftpClient.enterLocalPassiveMode();
             ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
+            log.warn(remotePath);
 
             // FTP 서버에서 파일 다운로드
             return ftpClient.retrieveFile(remotePath, outputStream);
@@ -117,9 +119,10 @@ public class FTPUtil {
             ftpClient.connect(server, port);
             ftpClient.login(user, password);
             ftpClient.enterLocalPassiveMode();
-
+            log.warn(remotePath);
             return ftpClient.deleteFile(remotePath);
         } catch (IOException e) {
+        	log.warn("123");
             e.printStackTrace();
             return false;
         } finally {

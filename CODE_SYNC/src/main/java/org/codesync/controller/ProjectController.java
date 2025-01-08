@@ -260,4 +260,9 @@ public class ProjectController {
     	int result = service.updatePortfolio(params);
     	return result;
     }
+    
+    @PostMapping("/leaveProject")
+    public int leaveProject(@RequestBody Map<String, Integer> params) {
+    	return service.leaveProject(params);
+    }
 }

@@ -6,6 +6,7 @@ import org.codesync.domain.CodeSyncHistoryVO;
 import org.codesync.domain.FileVO;
 import org.codesync.domain.FolderStructureVO;
 import org.codesync.domain.FolderVO;
+import org.codesync.domain.ProjectVO;
 
 public interface CodeSyncService {
 
@@ -69,7 +70,22 @@ public interface CodeSyncService {
 
 	public String getFileNameByFileNo(int fileNo);
 
-	public void insertSaveCodeHis(CodeSyncHistoryVO hvo);
+// 히스토리
+	public void insertSaveCodeHis(CodeSyncHistoryVO hvo);  // Integer로 변환(CodeSyncHistoryVO hvo);
+
+	public void insertCreateFolderHis(CodeSyncHistoryVO history);
+
+	public void insertPasteFolderHistory(CodeSyncHistoryVO history);
+
+	public void insertPasteFileHistory(CodeSyncHistoryVO history);
+
+	public void insertRenameFolderHistory(CodeSyncHistoryVO history);
+
+	public void insertRenameFileHistory(CodeSyncHistoryVO history);
+
+	public ProjectVO getProject(int codeSyncNo);
+
+	public int checkFolderExistence(Long codeSyncNo);
 
 
 }

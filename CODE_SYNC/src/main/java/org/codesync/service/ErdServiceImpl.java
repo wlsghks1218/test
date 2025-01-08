@@ -6,6 +6,7 @@ import org.codesync.domain.ArrowVO;
 import org.codesync.domain.ChatContentVO;
 import org.codesync.domain.ErdHistoryVO;
 import org.codesync.domain.MemoVO;
+import org.codesync.domain.ProjectVO;
 import org.codesync.domain.TableFieldsVO;
 import org.codesync.domain.TableVO;
 import org.codesync.mapper.ErdMapper;
@@ -116,6 +117,8 @@ public class ErdServiceImpl implements ErdService {
 
 	@Override
 	public List<TableFieldsVO> getTableFields(String id) {
+		
+		System.out.println("서비스에서 받은 아이디 " + id);
 		// TODO Auto-generated method stub
 		return mapper.getTableFields(id);
 	}
@@ -157,9 +160,14 @@ public class ErdServiceImpl implements ErdService {
 	}
 
 	@Override
-	public List<ErdHistoryVO> getHistories(int erdNo) {
+	public List<ErdHistoryVO> getHistories() {
 		// TODO Auto-generated method stub
-		return mapper.getHistories(erdNo);
+		return mapper.getHistories();
 	}
-
+@Override
+public ProjectVO getProject(int erdNo) {
+	int projectNo= mapper.getProjectNoByErdNo(erdNo);
+	ProjectVO result = mapper.getProject(projectNo);
+	return result;
+}
 }

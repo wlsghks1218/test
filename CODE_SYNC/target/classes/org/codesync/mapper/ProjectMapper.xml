@@ -100,4 +100,7 @@
 	<update id="updatePortfolio" parameterType="map">
 		update project_tbl set portfolioLink = #{temporaryLink} where projectNo = #{projectNo}
 	</update>
+	<delete id="leaveProject" parameterType="map">
+		delete from project_user_tbl where projectNo = #{projectNo} and userNo = #{userNo}
+	</delete>
 </mapper>

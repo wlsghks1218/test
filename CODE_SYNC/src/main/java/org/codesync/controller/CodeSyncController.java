@@ -11,6 +11,7 @@ import org.codesync.domain.CodeSyncHistoryVO;
 import org.codesync.domain.FileVO;
 import org.codesync.domain.FolderStructureVO;
 import org.codesync.domain.FolderVO;
+import org.codesync.domain.ProjectVO;
 import org.codesync.service.CodeSyncChatService;
 import org.codesync.service.CodeSyncService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -259,5 +260,285 @@ public class CodeSyncController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
+    @PostMapping("/insertCreateFileHistory")
+    public ResponseEntity<String> insertCreateFileHistory(@RequestBody Map<String, Object> request){
+        try {
+            // request에서 필요한 값 추출
+            String newName = (String) request.get("newName");
+            String codeSyncNoStr = (String) request.get("codeSyncNo");  // String으로 받기
+            int codeSyncNo = Integer.parseInt(codeSyncNoStr);  // Integer로 변환
+            String userId = (String) request.get("userId");
 
+            // 파일 생성 히스토리 저장
+            CodeSyncHistoryVO history = new CodeSyncHistoryVO();
+            history.setFileName(newName);
+            history.setProjectNo(service.getProjectNoByCodeSyncNo(codeSyncNo));  // 프로젝트 번호 조회
+            history.setUserId(userId);
+            history.setAction(2);
+
+            // 생성된 파일 히스토리 저장
+            service.insertSaveCodeHis(history);
+
+            return new ResponseEntity<>("File creation history recorded successfully!", HttpStatus.OK);
+        } catch (NumberFormatException e) {
+            log.error("Invalid codeSyncNo format", e);
+            return new ResponseEntity<>("Invalid codeSyncNo format", HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            log.error("Error inserting file creation history", e);
+            return new ResponseEntity<>("Failed to record file creation history", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    @PostMapping("/insertCreateFolderHistory")
+    public ResponseEntity<String> insertCreateFolderHistory(@RequestBody Map<String, Object> request){
+        try {
+            // request에서 필요한 값 추출
+            String newName = (String) request.get("newName");
+            String codeSyncNoStr = (String) request.get("codeSyncNo");  // String으로 받기
+            int codeSyncNo = Integer.parseInt(codeSyncNoStr);  // Integer로 변환
+            String userId = (String) request.get("userId");
+
+            // 파일 생성 히스토리 저장
+            CodeSyncHistoryVO history = new CodeSyncHistoryVO();
+            history.setFolderName(newName);
+            history.setProjectNo(service.getProjectNoByCodeSyncNo(codeSyncNo));  // 프로젝트 번호 조회
+            history.setUserId(userId);
+            history.setAction(2);
+
+            // 생성된 파일 히스토리 저장
+            service.insertCreateFolderHis(history);
+
+            return new ResponseEntity<>("File creation history recorded successfully!", HttpStatus.OK);
+        } catch (NumberFormatException e) {
+            log.error("Invalid codeSyncNo format", e);
+            return new ResponseEntity<>("Invalid codeSyncNo format", HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            log.error("Error inserting file creation history", e);
+            return new ResponseEntity<>("Failed to record file creation history", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    @PostMapping("/insertDeleteFileHistory")
+    public ResponseEntity<String> insertDeleteFileHistory(@RequestBody Map<String, Object> request){
+        try {
+            // request에서 필요한 값 추출
+            String fileName = (String) request.get("fileName");
+            String codeSyncNoStr = (String) request.get("codeSyncNo");  // String으로 받기
+            int codeSyncNo = Integer.parseInt(codeSyncNoStr);  // Integer로 변환
+            String userId = (String) request.get("userId");
+            
+
+            // 파일 생성 히스토리 저장
+            CodeSyncHistoryVO history = new CodeSyncHistoryVO();
+            history.setFileName(fileName);
+            history.setProjectNo(service.getProjectNoByCodeSyncNo(codeSyncNo));  // 프로젝트 번호 조회
+            history.setUserId(userId);
+            history.setAction(3);
+
+            // 생성된 파일 히스토리 저장
+            service.insertSaveCodeHis(history);
+
+            return new ResponseEntity<>("File creation history recorded successfully!", HttpStatus.OK);
+        } catch (NumberFormatException e) {
+            log.error("Invalid codeSyncNo format", e);
+            return new ResponseEntity<>("Invalid codeSyncNo format", HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            log.error("Error inserting file creation history", e);
+            return new ResponseEntity<>("Failed to record file creation history", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    @PostMapping("/insertDeleteFolderHistory")
+    public ResponseEntity<String> insertDeleteFolderHistory(@RequestBody Map<String, Object> request){
+        try {
+            // request에서 필요한 값 추출
+            String folderName = (String) request.get("folderName");
+            String codeSyncNoStr = (String) request.get("codeSyncNo");  // String으로 받기
+            int codeSyncNo = Integer.parseInt(codeSyncNoStr);  // Integer로 변환
+            String userId = (String) request.get("userId");
+            
+
+
+            // 파일 생성 히스토리 저장
+            CodeSyncHistoryVO history = new CodeSyncHistoryVO();
+            history.setFolderName(folderName);
+            history.setProjectNo(service.getProjectNoByCodeSyncNo(codeSyncNo));  // 프로젝트 번호 조회
+            history.setUserId(userId);
+            history.setAction(3);
+
+            // 생성된 파일 히스토리 저장
+            service.insertCreateFolderHis(history);
+
+            return new ResponseEntity<>("File creation history recorded successfully!", HttpStatus.OK);
+        } catch (NumberFormatException e) {
+            log.error("Invalid codeSyncNo format", e);
+            return new ResponseEntity<>("Invalid codeSyncNo format", HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            log.error("Error inserting file creation history", e);
+            return new ResponseEntity<>("Failed to record file creation history", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    @PostMapping("/insertPasteFolderHistory")
+    public ResponseEntity<String> insertPasteFolderHistory(@RequestBody Map<String, Object> request){
+        try {
+            // request에서 필요한 값 추출
+            String folderName = (String) request.get("folderName");
+            String newName = (String) request.get("newName");
+            
+            String codeSyncNoStr = (String) request.get("codeSyncNo");  // String으로 받기
+            int codeSyncNo = Integer.parseInt(codeSyncNoStr);  // Integer로 변환
+            String userId = (String) request.get("userId");
+            
+            System.out.println(newName);
+            
+
+
+            // 파일 생성 히스토리 저장
+            CodeSyncHistoryVO history = new CodeSyncHistoryVO();
+            history.setFolderName(folderName);
+            history.setNewFolderName(newName);
+            history.setProjectNo(service.getProjectNoByCodeSyncNo(codeSyncNo));  // 프로젝트 번호 조회
+            history.setUserId(userId);
+            history.setAction(4);
+
+            // 생성된 파일 히스토리 저장
+            service.insertPasteFolderHistory(history);
+
+            return new ResponseEntity<>("File creation history recorded successfully!", HttpStatus.OK);
+        } catch (NumberFormatException e) {
+            log.error("Invalid codeSyncNo format", e);
+            return new ResponseEntity<>("Invalid codeSyncNo format", HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            log.error("Error inserting file creation history", e);
+            return new ResponseEntity<>("Failed to record file creation history", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    @PostMapping("/insertPasteFileHistory")
+    public ResponseEntity<String> insertPasteFileHistory(@RequestBody Map<String, Object> request){
+        try {
+            // request에서 필요한 값 추출
+            String fileName = (String) request.get("fileName");
+            String newName = (String) request.get("newName");
+            
+            String codeSyncNoStr = (String) request.get("codeSyncNo");  // String으로 받기
+            int codeSyncNo = Integer.parseInt(codeSyncNoStr);  // Integer로 변환
+            String userId = (String) request.get("userId");
+            
+            System.out.println(newName);
+            
+
+
+            // 파일 생성 히스토리 저장
+            CodeSyncHistoryVO history = new CodeSyncHistoryVO();
+            history.setFileName(fileName);
+            history.setNewFolderName(newName);
+            history.setProjectNo(service.getProjectNoByCodeSyncNo(codeSyncNo));  // 프로젝트 번호 조회
+            history.setUserId(userId);
+            history.setAction(4);
+
+            // 생성된 파일 히스토리 저장
+            service.insertPasteFileHistory(history);
+
+            return new ResponseEntity<>("File creation history recorded successfully!", HttpStatus.OK);
+        } catch (NumberFormatException e) {
+            log.error("Invalid codeSyncNo format", e);
+            return new ResponseEntity<>("Invalid codeSyncNo format", HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            log.error("Error inserting file creation history", e);
+            return new ResponseEntity<>("Failed to record file creation history", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    @PostMapping("/insertRenameFolderHistory")
+    public ResponseEntity<String> insertRenameFolderHistory(@RequestBody Map<String, Object> request){
+        try {
+            // request에서 필요한 값 추출
+            String folderName = (String) request.get("folderName");
+            String newName = (String) request.get("newName");
+            
+            String codeSyncNoStr = (String) request.get("codeSyncNo");  // String으로 받기
+            int codeSyncNo = Integer.parseInt(codeSyncNoStr);  // Integer로 변환
+            String userId = (String) request.get("userId");
+            
+            
+
+
+            // 파일 생성 히스토리 저장
+            CodeSyncHistoryVO history = new CodeSyncHistoryVO();
+            history.setFolderName(folderName);
+            history.setNewFolderName(newName);
+            history.setProjectNo(service.getProjectNoByCodeSyncNo(codeSyncNo));  // 프로젝트 번호 조회
+            history.setUserId(userId);
+            history.setAction(5);
+
+            // 생성된 파일 히스토리 저장
+            service.insertRenameFolderHistory(history);
+
+            return new ResponseEntity<>("File creation history recorded successfully!", HttpStatus.OK);
+        } catch (NumberFormatException e) {
+            log.error("Invalid codeSyncNo format", e);
+            return new ResponseEntity<>("Invalid codeSyncNo format", HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            log.error("Error inserting file creation history", e);
+            return new ResponseEntity<>("Failed to record file creation history", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    } 
+    @PostMapping("/insertRenameFileHistory")
+    public ResponseEntity<String> insertRenameFileHistory(@RequestBody Map<String, Object> request){
+        try {
+            // request에서 필요한 값 추출
+            String fileName = (String) request.get("fileName");
+            String newName = (String) request.get("newName");
+            
+            String codeSyncNoStr = (String) request.get("codeSyncNo");  // String으로 받기
+            int codeSyncNo = Integer.parseInt(codeSyncNoStr);  // Integer로 변환
+            String userId = (String) request.get("userId");
+            
+            
+
+
+            // 파일 생성 히스토리 저장
+            CodeSyncHistoryVO history = new CodeSyncHistoryVO();
+            history.setFileName(fileName);
+            history.setNewName(newName);
+            history.setProjectNo(service.getProjectNoByCodeSyncNo(codeSyncNo));  // 프로젝트 번호 조회
+            history.setUserId(userId);
+            history.setAction(5);
+
+            // 생성된 파일 히스토리 저장
+            service.insertRenameFileHistory(history);
+
+            return new ResponseEntity<>("File creation history recorded successfully!", HttpStatus.OK);
+        } catch (NumberFormatException e) {
+            log.error("Invalid codeSyncNo format", e);
+            return new ResponseEntity<>("Invalid codeSyncNo format", HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            log.error("Error inserting file creation history", e);
+            return new ResponseEntity<>("Failed to record file creation history", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    @PostMapping("/getProject")
+    public ResponseEntity<Object> getProject(@RequestBody Map<String, Object> request) {
+        try {
+            // Request에서 codeSyncNo를 String으로 받고 Integer로 변환
+            String codeSyncNoStr = (String) request.get("codeSyncNo");
+            int codeSyncNo = Integer.parseInt(codeSyncNoStr);
+
+            // 서비스 호출로 프로젝트 정보 가져오기
+            ProjectVO result = service.getProject(codeSyncNo);
+
+            // 결과를 ResponseEntity로 반환
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        } catch (NumberFormatException e) {
+            log.error("Invalid codeSyncNo format", e);
+            return new ResponseEntity<>("Invalid codeSyncNo format", HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            log.error("Error retrieving project information", e);
+            return new ResponseEntity<>("Failed to retrieve project information", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    @GetMapping("/checkFolderExistence")
+    public ResponseEntity<Integer> checkFolderExistence(@RequestParam Long codeSyncNo) {
+        // DB에서 폴더 개수를 확인
+        int count = service.checkFolderExistence(codeSyncNo);
+        
+        // 결과를 그대로 반환
+        return ResponseEntity.ok(count);
+    }
 }

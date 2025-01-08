@@ -9,8 +9,6 @@ public class ErdHistoryVO {
 	private int erdHistoryNo;
 	private String action;
 	private Timestamp erdUpdateDate;
-	private int erdNo;
-	private String userId;
 	
 }
 

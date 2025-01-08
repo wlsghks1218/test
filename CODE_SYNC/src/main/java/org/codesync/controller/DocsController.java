@@ -2,6 +2,8 @@ package org.codesync.controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
@@ -83,6 +85,7 @@ public class DocsController {
 
         try {
             // 파일명 UTF-8 디코딩 처리
+//        	originalFilename = new String(originalFilename.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
         	originalFilename = new String(originalFilename.getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
             log.warn("디코딩된 파일명: " + originalFilename);
 
@@ -189,12 +192,17 @@ public class DocsController {
     
     @GetMapping("/download")
     public ResponseEntity<UrlResource> downloadFile(@RequestParam("filePath") String filePath) {
-        log.warn("다운로드 요청 파일 경로: {}"+ filePath);
+        log.warn("다운로드 요청 파일 경로: {} : "+ filePath);
 
         try {
+            // 파일 경로 디코딩
+            String decodedFilePath = URLDecoder.decode(filePath, StandardCharsets.UTF_8.name());
+            log.warn("디코딩된 파일 경로: {}" + decodedFilePath);
+
+            // FTP 다운로드 준비
             FTPUtil ftpUtil = new FTPUtil(FTP_SERVER, FTP_PORT, FTP_USER, FTP_PASSWORD);
-            String decodedFilePath = new String(filePath.getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
-            File tempFile = new File(System.getProperty("java.io.tmpdir"), filePath.substring(decodedFilePath.lastIndexOf("/") + 1));
+            File tempFile = new File(System.getProperty("java.io.tmpdir"), 
+                decodedFilePath.substring(decodedFilePath.lastIndexOf("/") + 1));
 
             boolean isDownloaded = ftpUtil.downloadFile(decodedFilePath, tempFile);
             if (!isDownloaded) {
@@ -202,23 +210,27 @@ public class DocsController {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
             }
 
+            // URL 리소스 생성
             UrlResource resource = new UrlResource(tempFile.toURI());
             if (!resource.exists()) {
                 log.warn("다운로드 파일이 존재하지 않습니다.");
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
             }
 
+            // 파일 삭제 예약
             tempFile.deleteOnExit();
 
             return ResponseEntity.ok()
                     .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + tempFile.getName() + "\"")
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + 
+                            URLEncoder.encode(tempFile.getName(), StandardCharsets.UTF_8.name()) + "\"")
                     .body(resource);
         } catch (Exception e) {
             log.error("파일 다운로드 중 오류 발생", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
+
 
     
     @DeleteMapping("/delete")

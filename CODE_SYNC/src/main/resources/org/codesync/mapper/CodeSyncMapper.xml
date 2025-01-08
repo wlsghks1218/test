@@ -48,9 +48,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
 <!-- 파일 조회 쿼리 -->
 <select id="getFilesByFolderNo" resultType="org.codesync.domain.FileVO">
-    SELECT *
+     SELECT *
     FROM CodeSync_file_tbl
     WHERE folderNo = #{folderNo}
+    ORDER BY fileName DESC
 </select>
 
 <select id="getFileNoByFolderAndFileName" resultType="Integer">
@@ -140,7 +141,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
  <select id="getFolderChildFile" resultType="org.codesync.domain.FileVO">
         SELECT *
         FROM CodeSync_file_tbl
-        WHERE folderNo = #{folderNo}
+        WHERE folderNo = #{folderNo} 
     </select>
  <delete id="deleteFileByFolderNo" parameterType="int">
         DELETE FROM CodeSync_file_tbl
@@ -192,5 +193,37 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     VALUES (#{projectNo}, #{fileName}, #{action},#{userId})
     </insert>
      
-     
+      <insert id="insertCreateFolderHis" parameterType="org.codesync.domain.CodeSyncHistoryVO">
+     INSERT INTO codeSync_his_tbl (projectNo, folderName, action, userId)
+    VALUES (#{projectNo}, #{folderName}, #{action},#{userId})
+    </insert>
+       <insert id="insertPasteFolderHistory" parameterType="org.codesync.domain.CodeSyncHistoryVO">
+     INSERT INTO codeSync_his_tbl (projectNo, folderName,newFolderName, action, userId)
+    VALUES (#{projectNo}, #{folderName},#{newFolderName}, #{action},#{userId})
+    </insert>
+     <insert id="insertPasteFileHistory" parameterType="org.codesync.domain.CodeSyncHistoryVO">
+     INSERT INTO codeSync_his_tbl (projectNo, fileName,newFolderName, action, userId)
+    VALUES (#{projectNo}, #{fileName},#{newFolderName}, #{action},#{userId})
+    </insert>
+      <insert id="insertRenameFolderHistory" parameterType="org.codesync.domain.CodeSyncHistoryVO">
+     INSERT INTO codeSync_his_tbl (projectNo, folderName,newFolderName, action, userId)
+    VALUES (#{projectNo}, #{folderName},#{newFolderName}, #{action},#{userId})
+    </insert>
+     <insert id="insertRenameFileHistory" parameterType="org.codesync.domain.CodeSyncHistoryVO">
+     INSERT INTO codeSync_his_tbl (projectNo, fileName,newName, action, userId)
+    VALUES (#{projectNo}, #{fileName},#{newName}, #{action},#{userId})
+    </insert>
+    
+     <select id="getProject" parameterType="int" resultType="org.codesync.domain.ProjectVO">
+        SELECT *
+        FROM project_tbl
+        WHERE projectNo = #{projectNo}
+    </select>
+    
+    <select id="checkFolderExistence" resultType="int">
+        SELECT count(*)
+        FROM CodeSync_folder_tbl
+        WHERE codeSyncNo = #{codeSyncNo}
+    </select>
+    
 </mapper>
